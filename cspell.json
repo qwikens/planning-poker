@@ -18,9 +18,11 @@
 	"useGitignore": true,
 	"ignorePaths": [".cspell/**", ".env*", ".gitignore", "pnpm-lock.yaml"],
 	"words": [
+		"amorim",
 		"biomejs",
 		"commitlint",
 		"hocuspocus",
+		"juliomerisio",
 		"lefthook",
 		"metafile",
 		"quickfix"
