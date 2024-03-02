@@ -1,0 +1,14 @@
+FROM node:20-alpine as builder
+WORKDIR /root
+RUN npm install -g pnpm
+COPY . /root
+RUN pnpm install
+RUN pnpm --filter sync-server build
+
+FROM node:20-alpine as production-build
+COPY --from=builder /root/apps/sync-server/dist .
+COPY --from=builder /root/apps/sync-server/package.json .
+# Copy the sqlite3 binary
+COPY --from=builder /root/apps/sync-server/node_modules/sqlite3/build/Release/node_sqlite3.node ./build/node_sqlite3.node
+EXPOSE 8080
+CMD ["node", "index.cjs"]

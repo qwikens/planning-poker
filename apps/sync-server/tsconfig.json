@@ -1,0 +1,25 @@
+// https://github.com/ueberdosis/hocuspocus/blob/main/tsconfig.json
+{
+  "compilerOptions": {
+    "target": "es2019",
+    "module": "esnext",
+    "strict": true,
+    "jsx": "preserve",
+    "importHelpers": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "rootDir": ".",
+    "allowJs": false,
+    "checkJs": false,
+    "lib": ["esnext", "dom"],
+    "skipLibCheck": true,
+    "types": ["vitest/globals"]
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["**/node_modules", "**/dist"]
+}

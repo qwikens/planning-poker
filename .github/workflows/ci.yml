@@ -1,0 +1,50 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/heads/main') }}
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PNPM_SCRIPT_PREFIX: --filter "...[origin/main]" --parallel --stream
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup environment
+        uses: ./.github/actions/setup-environment
+
+      - name: Restore TypeScript cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            tsconfig.tsbuildinfo
+            apps/*/tsconfig.tsbuildinfo
+          key: ${{ runner.os }}-ts-${{ hashFiles('**/tsconfig.json') }}
+          restore-keys: |
+            ${{ runner.os }}-ts-
+
+      - name: Check formatting and lint
+        run: pnpm biome:ci
+
+      - name: Run type check
+        run: pnpm ${{ env.PNPM_SCRIPT_PREFIX }} type-check
+
+      - name: Run build
+        run: pnpm ${{ env.PNPM_SCRIPT_PREFIX }} build
+
+      - name: Run tests
+        run: pnpm ${{ env.PNPM_SCRIPT_PREFIX }} test

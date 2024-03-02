@@ -1,0 +1,35 @@
+#   https://github.com/evilmartians/lefthook/blob/master/docs/configuration.md
+
+skip_output:
+  - meta
+  - success
+  - summary
+
+post-merge:
+  parallel: true
+  commands:
+    install-dependencies:
+      run: |
+        if ! git diff HEAD^ HEAD --exit-code -- pnpm-lock.yaml; then
+          pnpm install
+        else
+          echo "pnpm-lock.yaml unchanged, skipping pnpm install"
+        fi
+
+pre-push:
+  commands:
+    packages-audit:
+      run: pnpm audit
+
+pre-commit:
+  parallel: true
+  commands:
+    biome:
+      run: pnpm biome:apply
+    spellcheck:
+      run: pnpm cspell --no-must-find-files --cache {staged_files}
+
+commit-msg:
+  commands:
+    lint-commit-message:
+      run: pnpm commitlint --edit {1}

@@ -1,0 +1,22 @@
+app = "planning-poker-sync-server"
+kill_signal = "SIGTERM"
+primary_region = "gru"
+
+[mounts]
+  source="database"
+  destination="/mnt/database"
+
+[env]
+  DATABASE_PATH = "/mnt/database/production.sqlite3"
+
+[build]
+  dockerfile = "Dockerfile.sync-server"
+
+[[services]]
+  internal_port = 8080
+  protocol = "tcp"
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+    
