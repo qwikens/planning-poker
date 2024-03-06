@@ -10,14 +10,24 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hocuspocus/provider": "^2.11.3",
+    "@mantine/hooks": "^7.6.1",
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "dayjs": "^1.11.10",
+    "derive-valtio": "^0.1.0",
     "lucide-react": "^0.344.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tailwind-merge": "^2.2.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "tailwindcss-text-scale": "^0.2.4",
+    "valtio": "^1.13.2",
+    "valtio-yjs": "^0.5.1",
+    "y-indexeddb": "^9.0.12",
+    "yjs": "^13.6.11",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20.11.16",
