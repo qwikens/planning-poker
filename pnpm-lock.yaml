@@ -36,14 +36,14 @@ importers:
   apps/sync-server:
     dependencies:
       '@hocuspocus/extension-logger':
-        specifier: ^2.11.2
-        version: 2.11.2(y-protocols@1.0.6)(yjs@13.6.11)
+        specifier: ^2.11.3
+        version: 2.11.3(y-protocols@1.0.6)(yjs@13.6.11)
       '@hocuspocus/extension-sqlite':
-        specifier: ^2.11.2
-        version: 2.11.2(y-protocols@1.0.6)(yjs@13.6.11)
+        specifier: ^2.11.3
+        version: 2.11.3(y-protocols@1.0.6)(yjs@13.6.11)
       '@hocuspocus/server':
-        specifier: ^2.11.2
-        version: 2.11.2(y-protocols@1.0.6)(yjs@13.6.11)
+        specifier: ^2.11.3
+        version: 2.11.3(y-protocols@1.0.6)(yjs@13.6.11)
       sqlite3:
         specifier: ^5.1.7
         version: 5.1.7
@@ -1068,18 +1068,18 @@ packages:
     dev: false
     optional: true
 
-  /@hocuspocus/common@2.11.2:
-    resolution: {integrity: sha512-Ej3ehUYweYrlVArYdKe3grvEDO2wbjpy/IoZrtklHI4ydChLkXJCT6nTelM69dOtDG8IfX9WPIXiwwJF7CGNcA==}
+  /@hocuspocus/common@2.11.3:
+    resolution: {integrity: sha512-w3UZpW6ZVYIHPEFzZJV3yn1d3EZaXf2m2zU53pwj0AyTBmVD7kB9ZiD6twc9A7NNB1dkqD8c58PbD42+pnNiKQ==}
     dependencies:
       lib0: 0.2.88
     dev: false
 
-  /@hocuspocus/extension-database@2.11.2(y-protocols@1.0.6)(yjs@13.6.11):
-    resolution: {integrity: sha512-5wIO0wY8dF5fdyRAywMQNMTxylZrK/p0TtjJcQoKOM9KB7Z+4Yp9BHPzHQ7siteUZN2KZCy18TpI3lKYj7LNoA==}
+  /@hocuspocus/extension-database@2.11.3(y-protocols@1.0.6)(yjs@13.6.11):
+    resolution: {integrity: sha512-lERFgBI5BOLkKijh5M9G/giFuyVLy2qisUYv1Nt+94+q3w4hj3lq43o/pYaLaC8PiHcQ+nbDSBTtTTO9jjt7lQ==}
     peerDependencies:
       yjs: ^13.6.8
     dependencies:
-      '@hocuspocus/server': 2.11.2(y-protocols@1.0.6)(yjs@13.6.11)
+      '@hocuspocus/server': 2.11.3(y-protocols@1.0.6)(yjs@13.6.11)
       yjs: 13.6.11
     transitivePeerDependencies:
       - bufferutil
@@ -1087,10 +1087,10 @@ packages:
       - y-protocols
     dev: false
 
-  /@hocuspocus/extension-logger@2.11.2(y-protocols@1.0.6)(yjs@13.6.11):
-    resolution: {integrity: sha512-P07Z42pmwPgjWW6n4Xh2xYC5dsOY0FrWlHiyxFoz+YJo0Iv6TDXRuUAQHOg3qKdwIC9fgvfpSoxaIj1p0SbOqQ==}
+  /@hocuspocus/extension-logger@2.11.3(y-protocols@1.0.6)(yjs@13.6.11):
+    resolution: {integrity: sha512-uyVOA0J+SB8yQGZk7TYj+zL0G176ABbW5XatSkGIeQsqVGP8T03uYWS2+5i0tejM2WEHfGdeb3HlHNQgp9f3Xg==}
     dependencies:
-      '@hocuspocus/server': 2.11.2(y-protocols@1.0.6)(yjs@13.6.11)
+      '@hocuspocus/server': 2.11.3(y-protocols@1.0.6)(yjs@13.6.11)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -1098,10 +1098,10 @@ packages:
       - yjs
     dev: false
 
-  /@hocuspocus/extension-sqlite@2.11.2(y-protocols@1.0.6)(yjs@13.6.11):
-    resolution: {integrity: sha512-eSeHT4t+aM+GeGg+Qo9mXjIIp+fkQNeR90rKplGnfGCvhGk41EU2ft+1BBtH6fDZunjCyD3P+cSRx5lF5fUYsQ==}
+  /@hocuspocus/extension-sqlite@2.11.3(y-protocols@1.0.6)(yjs@13.6.11):
+    resolution: {integrity: sha512-Uu83x4ymVMz/eG5D+BGeEXIMBaqEifF9cmJdQFiBRQaCwAsR1G1cNdTLFWmYrqe7EIuvRZDjgev/h/E/+HYyaQ==}
     dependencies:
-      '@hocuspocus/extension-database': 2.11.2(y-protocols@1.0.6)(yjs@13.6.11)
+      '@hocuspocus/extension-database': 2.11.3(y-protocols@1.0.6)(yjs@13.6.11)
       kleur: 4.1.5
       sqlite3: 5.1.7
     transitivePeerDependencies:
@@ -1113,13 +1113,13 @@ packages:
       - yjs
     dev: false
 
-  /@hocuspocus/server@2.11.2(y-protocols@1.0.6)(yjs@13.6.11):
-    resolution: {integrity: sha512-/djaNUSS9vYmz5H/bformB9BXKVhSXS10WIURT1OqFLnN0dZnOB0gxL/IyGCZgXCNyiD8U03n7FIgad9MckV8g==}
+  /@hocuspocus/server@2.11.3(y-protocols@1.0.6)(yjs@13.6.11):
+    resolution: {integrity: sha512-1Vdy4RtJcpffs5I4Ey3M8ulu2f6AbpSDmK4YFG8k3O4EJT7HDSO3Ib5STiRBxlr2LncJeVa2ikwlvwQotsWqew==}
     peerDependencies:
       y-protocols: ^1.0.6
       yjs: ^13.6.8
     dependencies:
-      '@hocuspocus/common': 2.11.2
+      '@hocuspocus/common': 2.11.3
       async-lock: 1.4.1
       kleur: 4.1.5
       lib0: 0.2.88
