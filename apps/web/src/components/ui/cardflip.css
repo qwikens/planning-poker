@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap');
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --darkBg: #ffcc33;
+  --lightBg: #fff3ce;
+  --darkRed: #e22929;
+  --lightRed: #ffd0d0;
+  --darkBlack: #000;
+  --lightBlack: #777;
+
+}
+.cards {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  perspective: 1000px;
+}
+.card {
+  display: block;
+  width: 150px;
+  height: 200px;
+  position: relative;
+  font-family: 'Syne Mono', monospace;
+}
+
+.front, .back {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+
+  border-radius: 12px;
+  backface-visibility: hidden;
+  transition: all 0.5s;
+}
+.back {
+  border: 6px solid #fff;
+  background: conic-gradient(
+    var(--darkBg) 25%, 
+    var(--lightBg) 25%, 
+    var(--lightBg) 50%, 
+    var(--darkBg) 50%, 
+    var(--darkBg) 75%, 
+    var(--lightBg) 75%);
+  background-size: 20px 20px;
+  transform: rotateY(-180deg);
+}
+.front {
+  background-color: #fff;
+  font-size: 24px;
+}
+input[type=checkbox] {
+  display: none;
+}
+input[type=checkbox]:checked ~ .front {
+  transform: rotateY(180deg);
+}
+input[type=checkbox]:checked ~ .back {
+  transform: rotateY(0deg);
+}
+.spade, .club {
+  color: var(--darkBlack);
+}
+.spade .suit.main {
+  background-image: linear-gradient(135deg, var(--darkBlack) 50%, var(--lightBlack) 50%);
+}
+.heart, .diamond {
+  color: var(--darkRed);
+}
+.heart .suit.main {
+  background-image: linear-gradient(135deg, var(--darkRed) 50%, var(--lightRed) 50%);
+}
+.spade .suit:after {
+  content: '\2660';
+}
+.heart .suit:after {
+  content: '\2665';
+}
+.diamond .suit:after {
+  content: '\2666';
+}
+.club .suit:after {
+  content: '\2663';
+}
+
+.num-box {
+  text-align: center;
+  position: absolute;
+  width: 20px;
+}
+.num-box.top {
+  top: 10px;
+  left: 10px;
+}
+.num-box.bottom {
+  bottom: 10px;
+  right: 10px;
+  transform: rotate(180deg);
+}
+.num-box.suit:after {
+  display: block;
+  font-size: 1.2em;
+  margin-top: -10px;
+}
+.main {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 5em;
+  color: transparent;
+  -webkit-background-clip: text;
+}
+
+

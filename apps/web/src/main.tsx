@@ -1,11 +1,28 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App.tsx";
-import "./index.css";
+import { createRoot } from "react-dom/client";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
-// biome-ignore lint: disable non-null-assertion
-ReactDOM.createRoot(document.getElementById("root")!).render(
+import { App, CreateRoomForm, Room } from "./App";
+import "./global.css";
+
+const router = createBrowserRouter([
+	{
+		path: "/",
+		element: <App />,
+		children: [],
+	},
+	{
+		path: "/:id",
+		element: <Room />,
+	},
+	{
+		path: "new-game",
+		element: <CreateRoomForm />,
+	},
+]);
+
+createRoot(document.getElementById("root") ?? document.body).render(
 	<React.StrictMode>
-		<App />
+		<RouterProvider router={router} />
 	</React.StrictMode>,
 );

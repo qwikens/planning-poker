@@ -1,4 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+
+import textScalePlugin from "tailwindcss-text-scale";
+
 module.exports = {
 	darkMode: ["class"],
 	content: [
@@ -14,6 +17,8 @@ module.exports = {
 			padding: "2rem",
 			screens: {
 				"2xl": "1400px",
+				sm: "320px",
+				// max: '1920px',
 			},
 		},
 		extend: {
@@ -23,6 +28,7 @@ module.exports = {
 				ring: "hsl(var(--ring))",
 				background: "hsl(var(--background))",
 				foreground: "hsl(var(--foreground))",
+				disclaimer: "hsl(var(--disclaimer))",
 				primary: {
 					DEFAULT: "hsl(var(--primary))",
 					foreground: "hsl(var(--primary-foreground))",
@@ -58,6 +64,11 @@ module.exports = {
 				sm: "calc(var(--radius) - 4px)",
 			},
 			keyframes: {
+				"text-gradient": {
+					to: {
+						backgroundPosition: "-200% center",
+					},
+				},
 				"accordion-down": {
 					from: { height: "0" },
 					to: { height: "var(--radix-accordion-content-height)" },
@@ -68,10 +79,11 @@ module.exports = {
 				},
 			},
 			animation: {
+				"text-gradient": "text-gradient 5.5s linear infinite forwards",
 				"accordion-down": "accordion-down 0.2s ease-out",
 				"accordion-up": "accordion-up 0.2s ease-out",
 			},
 		},
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [require("tailwindcss-animate"), textScalePlugin({})],
 };

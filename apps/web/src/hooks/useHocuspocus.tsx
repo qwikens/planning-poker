@@ -2,7 +2,7 @@ import { HocuspocusProvider } from "@hocuspocus/provider";
 import { createContext, useContext, useState } from "react";
 import { type Doc } from "yjs";
 
-import { WS_URL } from "@/lib/env";
+import { WS_URL } from "../lib/env";
 
 type HocusPocusProviderProps = {
 	children: React.ReactNode;
@@ -36,7 +36,7 @@ export const HocusPocusProvider: React.FC<HocusPocusProviderProps> = ({
 }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const provider = new HocuspocusProvider({
-		url: WS_URL,
+		url: WS_URL ?? "ws://127.0.0.1:8080",
 		name: roomId,
 		document: ydoc,
 		onSynced: () => setIsLoading(true),
