@@ -5,7 +5,7 @@ import "./index.css";
 
 // biome-ignore lint: disable non-null-assertion
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+	<React.StrictMode>
+		<App />
+	</React.StrictMode>,
 );
