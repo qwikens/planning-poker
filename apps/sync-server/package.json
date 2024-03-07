@@ -1,31 +1,31 @@
 {
-  "name": "sync-server",
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": {
-    "build": "tsx esbuild.config.ts",
-    "build:analyze": "ANALYZE=true pnpm build",
-    "dev": "tsx --watch -r dotenv/config src/index.ts",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "type-check": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@hocuspocus/extension-logger": "^2.11.2",
-    "@hocuspocus/extension-sqlite": "^2.11.2",
-    "@hocuspocus/server": "^2.11.2",
-    "sqlite3": "^5.1.7",
-    "y-protocols": "^1.0.6",
-    "yjs": "^13.6.11",
-    "zod": "^3.22.4"
-  },
-  "devDependencies": {
-    "@types/node": "^20.11.16",
-    "dotenv": "^16.4.5",
-    "esbuild": "^0.20.0",
-    "tsx": "^4.7.0",
-    "typescript": "^5.3.3",
-    "vite": "^5.1.4",
-    "vitest": "^1.3.1"
-  }
+	"name": "sync-server",
+	"version": "0.1.0",
+	"type": "module",
+	"scripts": {
+		"build": "tsx esbuild.config.ts",
+		"build:analyze": "ANALYZE=true pnpm build",
+		"dev": "tsx --watch -r dotenv/config src/index.ts",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"type-check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@hocuspocus/extension-logger": "^2.11.3",
+		"@hocuspocus/extension-sqlite": "^2.11.3",
+		"@hocuspocus/server": "^2.11.3",
+		"sqlite3": "^5.1.7",
+		"y-protocols": "^1.0.6",
+		"yjs": "^13.6.11",
+		"zod": "^3.22.4"
+	},
+	"devDependencies": {
+		"@types/node": "^20.11.16",
+		"dotenv": "^16.4.5",
+		"esbuild": "^0.20.0",
+		"tsx": "^4.7.0",
+		"typescript": "^5.3.3",
+		"vite": "^5.1.4",
+		"vitest": "^1.3.1"
+	}
 }
