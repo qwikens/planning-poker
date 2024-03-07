@@ -18,23 +18,22 @@
 	"useGitignore": true,
 	"ignorePaths": [".cspell/**", ".env*", ".gitignore", "pnpm-lock.yaml"],
 	"words": [
-		"amorim",
+		"Avenir",
+		"bebebe",
 		"biomejs",
+		"cardflip",
 		"commitlint",
 		"hocuspocus",
-		"juliomerisio",
-		"lefthook",
-		"metafile",
-		"quickfix",
-		"Avenir",
 		"iconify",
-		"valtio",
 		"indexeddb",
+		"lefthook",
 		"mantine",
-		"ydoc",
-		"cardflip",
+		"metafile",
 		"qrcode",
+		"quickfix",
+		"qwikens",
+		"valtio",
 		"vaul",
-		"bebebe"
+		"ydoc"
 	]
 }
