@@ -8,6 +8,7 @@
   "type": "module",
   "scripts": {
     "biome:apply": "npx @biomejs/biome check --apply .",
+    "biome:apply:unsafe": "npx @biomejs/biome check --apply-unsafe .",
     "biome:ci": "npx @biomejs/biome ci .",
     "test": "vitest"
   },
