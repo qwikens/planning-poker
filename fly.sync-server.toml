@@ -1,3 +1,8 @@
+# fly.toml app configuration file generated for planning-poker-sync-server on 2024-03-08T05:22:19-03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
 app = "planning-poker-sync-server"
 kill_signal = "SIGTERM"
 primary_region = "gru"

@@ -1,14 +1,14 @@
-# fly.toml app configuration file generated for qwikens-web on 2024-02-28T22:57:43-03:00
+# fly.toml app configuration file generated for planning-poker-web on 2024-03-08T05:28:09-03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'planning-poker-web'
-primary_region = 'gru'
-kill_signal = 'SIGTERM'
+app = "planning-poker-web"
+primary_region = "gru"
+kill_signal = "SIGTERM"
 
 [build]
-  dockerfile = 'Dockerfile.web'
+  dockerfile = "Dockerfile.web"
 
 [http_service]
   internal_port = 3030
@@ -18,6 +18,6 @@ kill_signal = 'SIGTERM'
   min_machines_running = 0
 
 [[vm]]
-  memory = '1gb'
-  cpu_kind = 'shared'
+  memory = "1gb"
+  cpu_kind = "shared"
   cpus = 1
