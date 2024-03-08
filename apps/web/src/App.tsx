@@ -220,8 +220,7 @@ const RevealCards = ({ roomId }: { roomId: string }) => {
 						: mean(snap.room[roomId].votes?.map((vote) => vote.vote)),
 			};
 
-			// @ts-expect-error - need to fix the readonly issue
-			const updatedIssues = update(index, updated, currentIssues);
+			const updatedIssues = update(index, updated, [...currentIssues]);
 
 			if (index >= 0 && index < (issues.get(roomId)?.length ?? 0)) {
 				issues.doc?.transact(() => {
