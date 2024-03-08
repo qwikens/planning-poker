@@ -1,0 +1,13 @@
+FROM node:20-alpine as builder
+WORKDIR /root
+RUN npm install -g pnpm
+COPY . /root
+RUN pnpm install
+RUN pnpm --filter web build
+
+FROM nginx:alpine as production-build
+COPY nginx.web.conf /etc/nginx/nginx.conf
+RUN rm -rf /usr/share/nginx/html/*
+COPY --from=builder /root/apps/web/dist /usr/share/nginx/html/planning-poker-web
+EXPOSE 3030
+ENTRYPOINT ["nginx", "-g", "daemon off;"]

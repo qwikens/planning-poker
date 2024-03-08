@@ -1,0 +1,23 @@
+# fly.toml app configuration file generated for planning-poker-web on 2024-03-08T05:28:09-03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "planning-poker-web"
+primary_region = "gru"
+kill_signal = "SIGTERM"
+
+[build]
+  dockerfile = "Dockerfile.web"
+
+[http_service]
+  internal_port = 3030
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1

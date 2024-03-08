@@ -23,6 +23,7 @@
 		"biomejs",
 		"cardflip",
 		"commitlint",
+		"flyctl",
 		"hocuspocus",
 		"iconify",
 		"indexeddb",
@@ -32,6 +33,7 @@
 		"qrcode",
 		"quickfix",
 		"qwikens",
+		"superfly",
 		"valtio",
 		"vaul",
 		"ydoc"

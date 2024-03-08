@@ -36,7 +36,7 @@ export const HocusPocusProvider: React.FC<HocusPocusProviderProps> = ({
 }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const provider = new HocuspocusProvider({
-		url: WS_URL ?? "ws://127.0.0.1:8080",
+		url: WS_URL,
 		name: roomId,
 		document: ydoc,
 		onSynced: () => setIsLoading(true),
