@@ -2,34 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-.tag {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  justify-content: center;
-  border-radius: 5px;
-  padding: 8px 12px;
-  z-index: 1;
-  font-size: 14px;
-  line-height: 130%;
-  margin-bottom: 22px;
-  background: linear-gradient(
-    265.32deg,
-    rgba(234, 236, 138, 0.43) 3.18%,
-    rgba(234, 236, 138, 0.16) 95.48%
-  );
-}
-
-
-
-.tag::before {
-  content: '';
-  position: absolute;
-  inset: 1px;
-  border-radius: 4px;
-  z-index: -1;
-  @apply bg-background;
+* {
+  box-sizing: border-box;
 }
 
 :root {
@@ -41,10 +15,6 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-*,
-button {
-  cursor: default;
 }
 
 @layer base {
@@ -109,6 +79,3 @@ html, body, #root {
 }
 
 
-* {
-  box-sizing: border-box;
-}

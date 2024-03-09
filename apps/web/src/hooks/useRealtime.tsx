@@ -42,7 +42,6 @@ type RealtimeContextType = {
 	issues: Y.Map<Issue[]>;
 	room: Y.Map<RoomState>;
 	votingHistory: Y.Array<VotingHistory>;
-	canShow: boolean;
 };
 
 const RealtimeContext = createContext<RealtimeContextType | undefined>(
@@ -57,10 +56,8 @@ export const useDocuments = () => {
 	return context;
 };
 
-export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
-	children,
-}) => {
-	const { provider, roomId, canShow } = useHocusPocus();
+export const RealtimeProvider = ({ children }: RealtimeProviderProps) => {
+	const { provider, roomId } = useHocusPocus();
 	const room = provider.document.getMap<RoomState>(`ui-state${roomId}`);
 	const issues = provider.document.getMap<Issue[]>(`issues-${roomId}`);
 	const votingHistory = provider.document.getArray<VotingHistory>(
@@ -83,7 +80,6 @@ export const RealtimeProvider: React.FC<RealtimeProviderProps> = ({
 				issues,
 				room,
 				votingHistory,
-				canShow,
 			}}
 		>
 			{children}

@@ -2,7 +2,9 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
-import { App, CreateRoomForm, Room } from "./App";
+import { CreateRoomForm } from "@/features/CreateGameForm.tsx";
+import { Room } from "@/game.tsx";
+import { App } from "./App";
 import "./global.css";
 
 const router = createBrowserRouter([
