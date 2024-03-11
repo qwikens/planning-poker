@@ -55,6 +55,7 @@ export const CreateRoomForm = () => {
 
 			room.set(roomId, game);
 			localStorage.setItem("guestUser", data.userName);
+			localStorage.setItem("guestUserId", user.id);
 			state.room[roomId] = game;
 
 			const roomUrl = `${window.location.origin}/${roomId}`;

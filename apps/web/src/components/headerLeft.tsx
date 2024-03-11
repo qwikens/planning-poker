@@ -39,9 +39,9 @@ export const HeaderLeft = ({ id }: { id?: string } = {}) => {
 				<NetworkStatus />
 			</div>
 
-			{currentRoom?.name ? (
-				<TextAnimatedGradient>{currentRoom.name}</TextAnimatedGradient>
-			) : null}
+			{/*{currentRoom?.name ? (*/}
+			{/*  <TextAnimatedGradient>{currentRoom.name}</TextAnimatedGradient>*/}
+			{/*) : null}*/}
 		</div>
 	);
 };

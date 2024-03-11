@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import { CreateRoomForm } from "@/features/CreateGameForm.tsx";
-import { Room } from "@/game.tsx";
+import { Game } from "@/game.tsx";
 import { App } from "./App";
 import "./global.css";
 
@@ -15,7 +15,7 @@ const router = createBrowserRouter([
 	},
 	{
 		path: "/:id",
-		element: <Room />,
+		element: <Game />,
 	},
 	{
 		path: "new-game",

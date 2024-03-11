@@ -14,17 +14,22 @@ export const RevealCards = ({ roomId }: { roomId: string }) => {
 
 		const currentIssues = snap.issues[roomId];
 
-		const index = currentIssues.findIndex((issue) => {
-			return issue.id === snap.room[roomId].currentVotingIssue?.id;
+		const index = currentIssues?.findIndex((issue) => {
+			return issue.id === snap.room[roomId]?.currentVotingIssue?.id;
 		});
+
+		if (index === undefined) {
+			room.set(roomId, {
+				...state.room[roomId],
+				revealCards: true,
+			});
+			return;
+		}
 
 		if (index !== -1) {
 			const updated = {
 				...currentIssues[index],
-				storyPoints:
-					snap.room[roomId].votingSystem === "t-shirt"
-						? 0
-						: mean(snap.room[roomId].votes?.map((vote) => vote.vote)),
+				storyPoints: mean(snap.room[roomId].votes?.map((vote) => vote.vote)),
 			};
 
 			const updatedIssues = update(index, updated, [...currentIssues]);

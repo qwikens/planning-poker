@@ -31,7 +31,7 @@ import {
 	DrawerTrigger,
 } from "./drawer";
 
-export function Modal() {
+export function GameSettingsModal() {
 	const [open, setOpen] = React.useState(false);
 	const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -48,7 +48,7 @@ export function Modal() {
 		return (
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
-					<Button variant="outline" className="">
+					<Button variant="ghost" className={"w-8 h-8 p-0"}>
 						<span className="sr-only">{title}</span>
 						<svg
 							width={16}

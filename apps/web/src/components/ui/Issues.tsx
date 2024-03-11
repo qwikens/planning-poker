@@ -1,8 +1,9 @@
-import { useHotkeys } from "@mantine/hooks";
+import { useFocusWithin, useHotkeys } from "@mantine/hooks";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
+
 import { z } from "zod";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -13,20 +14,22 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { Issue, useDocuments } from "@/hooks/useRealtime";
+import { Issue, RoomState, useDocuments } from "@/hooks/useRealtime";
 import { state } from "@/store";
 
 import { Button } from "@/components/ui/button";
 
+import { ComboboxDropdownMenu } from "@/components/ui/dropdown.tsx";
 import { Input } from "@/components/ui/input";
 import {
 	Sheet,
 	SheetContent,
-	SheetDescription,
 	SheetHeader,
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
+import useVimNavigation from "@/hooks/useVimNavigation";
+import { cn } from "@/lib/utils.ts";
 
 const IssueSchema = z.object({
 	title: z.string().min(1),
@@ -79,10 +82,63 @@ const CreateIssueForm = () => {
 				name="title"
 				ref={inputRef}
 			/>
-			<Button variant="outline">Add an issue</Button>
 		</form>
 	);
 };
+
+function IssueCard(props: {
+	roomState: RoomState;
+	issue: Issue;
+	"data-vim-position": number;
+	onClick: () => void;
+}) {
+	const { ref, focused } = useFocusWithin();
+
+	useHotkeys([
+		[
+			"p",
+			focused
+				? () => {
+						alert(`pressed p in issue ${props.issue.title}`);
+				  }
+				: () => {},
+		],
+
+		["Enter", focused ? props.onClick : () => {}],
+	]);
+
+	return (
+		<motion.div
+			{...props}
+			tabIndex={0}
+			ref={ref}
+			style={{ overflow: "hidden" }}
+			className={cn(
+				"flex ring-offset-background mx-1 focus-visible:outline-none focus-visible:ring-ring/50   focus-visible:ring-offset-0 focus-visible:ring-1 flex-col  px-3 py-2 mt-2 bg-secondary/40 border rounded-md border-border transition-background ",
+				{
+					"bg-primary/20":
+						props.roomState?.currentVotingIssue?.id === props.issue.id,
+					"border-primary/50":
+						props.roomState?.currentVotingIssue?.id === props.issue.id,
+				},
+			)}
+		>
+			<div className={"flex justify-between items-center"}>
+				<p>{props.issue.title}</p>
+				<ComboboxDropdownMenu />
+			</div>
+
+			<div />
+
+			<div className="flex items-center justify-between gap-2 mt-2">
+				<div>
+					<p className={"text-sm text-foreground/40"}>{props.issue.id}</p>
+				</div>
+				<div className="flex items-center gap-2">{props.issue.storyPoints}</div>
+			</div>
+		</motion.div>
+	);
+}
 
 const IssueList = () => {
 	const snap = useSnapshot(state);
@@ -115,43 +171,21 @@ const IssueList = () => {
 	}
 
 	return (
-		<ScrollArea className="h-[78dvh] rounded-md pb-10">
+		<ScrollArea className="h-[85dvh] rounded-md pb-10 px-4">
 			<AnimatePresence initial={false}>
 				{roomIssues
 					.slice()
 					.reverse()
-					.map((issue) => (
-						<motion.div
+					.map((issue, index) => (
+						<IssueCard
 							key={issue.id}
-							style={{ overflow: "hidden" }}
-							className="flex flex-col gap-2 p-4 mt-2 border rounded-md border-border"
-						>
-							<div>
-								<p>{issue.title}</p>
-							</div>
-
-							<div className="flex items-center gap-2 mt-2">
-								<Button
-									onClick={() => {
-										setActiveIssue(issue);
-									}}
-									variant={
-										roomState?.currentVotingIssue?.id === issue.id
-											? "default"
-											: "secondary"
-									}
-									className="max-w-fit"
-								>
-									{roomState?.currentVotingIssue?.id === issue.id
-										? "Voting now..."
-										: "Vote this issue"}
-								</Button>
-
-								<div className="flex items-center gap-2">
-									{issue.storyPoints}
-								</div>
-							</div>
-						</motion.div>
+							data-vim-position={index}
+							roomState={roomState as RoomState}
+							issue={issue}
+							onClick={() => {
+								setActiveIssue(issue);
+							}}
+						/>
 					))}
 			</AnimatePresence>
 		</ScrollArea>
@@ -161,22 +195,20 @@ const IssueList = () => {
 export const Issues = () => {
 	const open = useSnapshot(state).issuesOpen;
 	const buttonRef = useRef<HTMLButtonElement>(null);
+	useVimNavigation();
 
-	useHotkeys(
+	useHotkeys([
 		[
-			[
-				"Escape",
-				() => {
-					if (state.issuesOpen) {
-						state.issuesOpen = false;
+			"Escape",
+			() => {
+				if (state.issuesOpen) {
+					state.issuesOpen = false;
 
-						buttonRef.current?.focus();
-					}
-				},
-			],
+					buttonRef.current?.focus();
+				}
+			},
 		],
-		[],
-	);
+	]);
 
 	useHotkeys([
 		[
@@ -197,10 +229,10 @@ export const Issues = () => {
 			}}
 		>
 			<TooltipProvider>
-				<Tooltip delayDuration={0}>
+				<Tooltip>
 					<TooltipTrigger asChild>
 						<SheetTrigger asChild>
-							<Button ref={buttonRef} variant="outline">
+							<Button ref={buttonRef} variant="ghost">
 								{open ? (
 									<svg
 										width="16"
@@ -242,15 +274,15 @@ export const Issues = () => {
 				</Tooltip>
 			</TooltipProvider>
 			<SheetContent
-				className="m-auto top-[114px] sm:max-w-full md:max-w-full w-full lg:w-full lg:max-w-[420px] data-[state=open]:slide-in-from-right"
+				className="m-auto top-[114px] sm:max-w-full md:max-w-full w-full lg:w-full lg:max-w-[370px] data-[state=open]:slide-in-from-right p-0"
 				onInteractOutside={(event) => event.preventDefault()}
 			>
-				<SheetHeader>
+				<SheetHeader className={"p-4 px-4"}>
 					<SheetTitle>Issues</SheetTitle>
-					<SheetDescription>Create issues and vote</SheetDescription>
 					<CreateIssueForm />
-					<IssueList />
 				</SheetHeader>
+
+				<IssueList />
 			</SheetContent>
 		</Sheet>
 	);

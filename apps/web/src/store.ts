@@ -12,7 +12,7 @@ interface GameState {
 export const state = proxy<GameState>({
 	issues: {},
 	room: {},
-	issuesOpen: false,
+	issuesOpen: true,
 });
 
 devtools(state, {

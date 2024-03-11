@@ -16,7 +16,7 @@ export const VotingResult = ({ id }: { id: string }) => {
 		}, {});
 
 	return (
-		<div className="flex flex-col items-center w-full gap-2 mx-auto">
+		<div className="flex flex-col w-full gap-2 mx-auto">
 			<h1 className="text-scale-[18px]/[26px] h-20">
 				{roomState?.currentVotingIssue?.title ? (
 					<span>Voting issue: {roomState?.currentVotingIssue?.title}</span>
