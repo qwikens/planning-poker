@@ -2,6 +2,7 @@ import { HocuspocusProvider } from "@hocuspocus/provider";
 import { createContext, useContext, useState } from "react";
 import { type Doc } from "yjs";
 
+import { createSession, getSession } from "@/lib/session";
 import { WS_URL } from "../lib/env";
 
 type HocusPocusProviderProps = {
@@ -40,7 +41,7 @@ export const HocusPocusProvider: React.FC<HocusPocusProviderProps> = ({
 		name: roomId,
 		document: ydoc,
 		onSynced: () => setIsLoading(true),
-		token: () => "default-token",
+		token: () => getSession() ?? createSession(),
 		parameters: {
 			roomId,
 		},

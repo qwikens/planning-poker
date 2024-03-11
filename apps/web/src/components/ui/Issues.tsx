@@ -27,6 +27,7 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
+import { getSession } from "@/lib/session";
 
 const IssueSchema = z.object({
 	title: z.string().min(1),
@@ -34,11 +35,13 @@ const IssueSchema = z.object({
 
 const CreateIssueForm = () => {
 	const { issues } = useDocuments();
-	const currentUser = localStorage.getItem("guestUser");
 	const id = useParams().id;
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		const userId = getSession();
+		if (!userId) return;
+
 		event.preventDefault();
 		const formData = new FormData(event.currentTarget);
 		const title = formData.get("title");
@@ -54,7 +57,7 @@ const CreateIssueForm = () => {
 						id: Date.now().toString(),
 						storyPoints: 0,
 						createdAt: Date.now(),
-						createdBy: currentUser ?? "guest",
+						createdBy: userId,
 						link: "https://qwikens.com",
 						title: data.title,
 					},

@@ -10,11 +10,12 @@ import {
 import { useRef } from "react";
 import { useSnapshot } from "valtio";
 
+import { getSession } from "@/lib/session";
 import { useDocuments } from "../../hooks/useRealtime";
 import { cn } from "../../lib/utils";
 import { state } from "../../store";
 
-export function Dock({ roomId }: { roomId: string }) {
+export function Deck({ roomId }: { roomId: string }) {
 	const mouseX = useMotionValue(Infinity);
 
 	const snap = useSnapshot(state);
@@ -30,12 +31,11 @@ export function Dock({ roomId }: { roomId: string }) {
 	const { room } = useDocuments();
 
 	const onVote = (option: number | string) => {
+		const userId = getSession();
+		if (!userId) return;
+
 		const existingVotesWithoutMine =
-			room
-				.get(roomId)
-				?.votes?.filter(
-					(vote) => vote.votedBy !== localStorage.getItem("guestUser"),
-				) ?? [];
+			room.get(roomId)?.votes?.filter((vote) => vote.votedBy !== userId) ?? [];
 
 		room.set(roomId, {
 			...state.room[roomId],
@@ -43,14 +43,14 @@ export function Dock({ roomId }: { roomId: string }) {
 			votes: [
 				...existingVotesWithoutMine,
 				{
-					votedBy: localStorage.getItem("guestUser") ?? "guest",
+					votedBy: userId,
 					vote: option,
 				},
 			],
 		});
 	};
 	const activeTab = snap.room[roomId]?.votes?.find(
-		(vote) => vote.votedBy === localStorage.getItem("guestUser"),
+		(vote) => vote.votedBy === getSession(),
 	);
 
 	return (
