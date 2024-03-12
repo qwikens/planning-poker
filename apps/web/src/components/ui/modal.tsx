@@ -8,7 +8,6 @@ import { useDocuments } from "@/hooks/useRealtime";
 import { cn } from "@/lib/utils";
 import { state } from "@/store";
 
-import { PokerPlanningSelect } from "@/components/ui/PokerPlanningDropdown";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -30,6 +29,7 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "./drawer";
+import { PokerPlanningSelect } from "@/components/ui/poker-planning-dropdown.tsx";
 
 export function GameSettingsModal() {
 	const [open, setOpen] = React.useState(false);

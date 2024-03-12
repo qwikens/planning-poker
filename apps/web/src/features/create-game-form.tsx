@@ -1,4 +1,3 @@
-import { PokerPlanningSelect } from "@/components/ui/PokerPlanningDropdown.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { state } from "@/store.ts";
@@ -8,6 +7,7 @@ import { nanoid } from "nanoid";
 import { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
+import { PokerPlanningSelect } from "@/components/ui/poker-planning-dropdown.tsx";
 
 const CreateGameSchema = z.object({
 	gameName: z.string().default("Planning Poker Game"),

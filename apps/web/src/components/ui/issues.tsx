@@ -107,6 +107,8 @@ function IssueCard(props: {
 		["Enter", focused ? props.onClick : () => {}],
 	]);
 
+	const currentVoting =
+		props.roomState?.currentVotingIssue?.id === props.issue.id;
 	return (
 		<motion.div
 			{...props}
@@ -116,10 +118,8 @@ function IssueCard(props: {
 			className={cn(
 				"flex ring-offset-background mx-1 focus-visible:outline-none focus-visible:ring-ring/50   focus-visible:ring-offset-0 focus-visible:ring-1 flex-col  px-3 py-2 mt-2 bg-secondary/40 border rounded-md border-border transition-background ",
 				{
-					"bg-primary/20":
-						props.roomState?.currentVotingIssue?.id === props.issue.id,
-					"border-primary/50":
-						props.roomState?.currentVotingIssue?.id === props.issue.id,
+					"bg-primary/20": currentVoting,
+					"border-primary/50": currentVoting,
 				},
 			)}
 		>

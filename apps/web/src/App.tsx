@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
-import { HeaderLeft } from "@/components/headerLeft.tsx";
 import { Button } from "@/components/ui/button";
+import { HeaderLeft } from "@/components/header-left.tsx";
 export const App = () => {
 	const navigate = useNavigate();
 	const createRoom = () => navigate("/new-game");

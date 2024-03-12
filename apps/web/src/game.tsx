@@ -1,13 +1,7 @@
-import { HeaderLeft } from "@/components/headerLeft.tsx";
-import { Issues } from "@/components/ui/Issues.tsx";
+import { Issues } from "@/components/ui/issues.tsx";
 import { Dock } from "@/components/ui/deck.tsx";
 import { GameSettingsModal } from "@/components/ui/modal.tsx";
 import { Toaster } from "@/components/ui/toaster.tsx";
-import { CopyToClipboard } from "@/features/CopyToClipboard.tsx";
-import { CreateUserForm } from "@/features/CreateUserForm.tsx";
-import { RevealCards } from "@/features/RevealCards.tsx";
-import { VoteNext } from "@/features/VoteNext.tsx";
-import { VotingResult } from "@/features/votingResult.tsx";
 import { HocusPocusProvider } from "@/hooks/useHocuspocus.tsx";
 import { RealtimeProvider } from "@/hooks/useRealtime.tsx";
 import { state } from "@/store.ts";
@@ -16,6 +10,12 @@ import { useDocumentTitle } from "@mantine/hooks";
 import { QRCodeSVG } from "qrcode.react";
 import { useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
+import { HeaderLeft } from "./components/header-left";
+import { CreateUserForm } from "@/features/create-user-form.tsx";
+import { CopyToClipboard } from "@/features/copy-to-clipboard.tsx";
+import { VotingResult } from "@/features/voting-result.tsx";
+import { VoteNext } from "@/features/vote-next.tsx";
+import { RevealCards } from "@/features/reveal-cards.tsx";
 
 export const Game = () => {
 	const id = useParams().id;
