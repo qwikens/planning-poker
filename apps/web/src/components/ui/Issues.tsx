@@ -126,6 +126,7 @@ function IssueCard(props: {
 
 	return (
 		<motion.div
+			data-vim-position={props["data-vim-position"]}
 			onClick={props.onClick}
 			tabIndex={0}
 			ref={ref}
