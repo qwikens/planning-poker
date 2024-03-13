@@ -38,7 +38,7 @@ const DataTable = ({ id }: { id: string }) => {
   const currentVotingHistory = votingHistory[id];
 
   const exportToCsv = useExportToCsv(
-    `${new Date().toLocaleDateString()}-voting-history.csv`,
+    `${new Date().toLocaleDateString()}_voting_history.csv`,
   );
 
   return (
@@ -84,11 +84,7 @@ const DataTable = ({ id }: { id: string }) => {
             </TableCell>
             <TableCell className="text-right">
               {currentVotingHistory.reduce(
-                (acc, row) =>
-                  acc +
-                  row.votes
-                    .filter((vote) => typeof vote.vote === "number")
-                    .reduce((acc, vote) => acc + Number(vote.vote), 0),
+                (acc, row) => acc + row.agreement,
                 0,
               )}{" "}
               points
