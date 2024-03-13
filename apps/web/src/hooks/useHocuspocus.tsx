@@ -1,5 +1,5 @@
 import { HocuspocusProvider } from "@hocuspocus/provider";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
 import { type Doc } from "yjs";
 
 import { createSession, getSession } from "@/lib/session";
@@ -14,7 +14,6 @@ type HocusPocusProviderProps = {
 type HocusPocusContextType = {
 	provider: HocuspocusProvider;
 	roomId: string;
-	canShow: boolean;
 	clientId?: number;
 };
 
@@ -30,17 +29,15 @@ export const useHocusPocus = () => {
 	return context;
 };
 
-export const HocusPocusProvider: React.FC<HocusPocusProviderProps> = ({
+export const HocusPocusProvider = ({
 	children,
 	roomId,
 	ydoc,
-}) => {
-	const [isLoading, setIsLoading] = useState(false);
+}: HocusPocusProviderProps) => {
 	const provider = new HocuspocusProvider({
 		url: WS_URL,
 		name: roomId,
 		document: ydoc,
-		onSynced: () => setIsLoading(true),
 		token: () => getSession() ?? createSession(),
 		parameters: {
 			roomId,
@@ -54,7 +51,6 @@ export const HocusPocusProvider: React.FC<HocusPocusProviderProps> = ({
 			value={{
 				provider,
 				roomId,
-				canShow: isLoading,
 				clientId,
 			}}
 		>

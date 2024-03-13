@@ -1,18 +1,20 @@
 import { createBrowserRouter } from "react-router-dom";
-import { App, CreateRoomForm } from "./App";
 
-// TODO: Convert all to lazy
 export const router = createBrowserRouter([
 	{
 		path: "/",
-		element: <App />,
+		lazy: () => import("./App"),
 	},
 	{
 		path: "/:id",
-		lazy: () => import("./features/room"),
+		lazy: () => import("./features/game/game"),
+	},
+	{
+		path: "/:id/history",
+		lazy: () => import("./features/history-table"),
 	},
 	{
 		path: "new-game",
-		element: <CreateRoomForm />,
+		lazy: () => import("./features/create-game-form"),
 	},
 ]);

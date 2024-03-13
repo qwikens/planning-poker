@@ -19,6 +19,7 @@ export const createSession = () => {
 /** Removes user id from local storage. */
 export const clearSession = () => {
 	localStorage.removeItem(USER_ID_KEY);
+	localStorage.removeItem(GUEST_NAME_KEY);
 };
 
 /** Returns user id from local storage. */

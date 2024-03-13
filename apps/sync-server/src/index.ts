@@ -14,10 +14,20 @@ type Issue = {
 	title: string;
 };
 
+type User = {
+	id: string;
+	name: string;
+};
+
+type Vote = {
+	votedBy: User;
+	vote: number | string;
+};
+
 type RoomState = {
-	votes: { votedBy: string; vote: number | string }[];
+	votes: Vote[];
 	currentVotingIssue?: Issue;
-	participants: { name: string; id: string; online: boolean }[];
+	participants: User[];
 	revealCards: boolean;
 	votingSystem: string;
 	name: string;
