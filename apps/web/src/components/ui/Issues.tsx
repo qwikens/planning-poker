@@ -272,7 +272,9 @@ const IssueList = () => {
 					}}
 				>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Are you sure?</AlertDialogTitle>
+						<AlertDialogTitle>
+							Are you sure you want to delete all issues?
+						</AlertDialogTitle>
 						<AlertDialogDescription>
 							You can undo this action by pressing <Kbd>Command</Kbd> +{" "}
 							<Kbd>z</Kbd>
