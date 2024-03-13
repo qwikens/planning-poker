@@ -3,14 +3,14 @@ import { devtools } from "valtio/utils";
 
 import { Issue, RoomState, VotingHistory } from "./hooks/useRealtime";
 
-interface GameState {
+type GameState = {
 	issues: Record<string, Issue[]>;
 	votingHistory: Record<string, VotingHistory[]>;
 	room: Record<string, RoomState>;
 	issuesOpen: boolean;
 	globalSequentialId: number;
 	currentIndex: number;
-}
+};
 
 export const state = proxy<GameState>({
 	issues: {},

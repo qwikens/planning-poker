@@ -118,7 +118,7 @@ export function GameSettingsModal() {
 	);
 }
 
-const UpdateRoomSchema = z
+const updateRoomSchema = z
 	.object({
 		roomName: z.string().default("Planning Poker Game"),
 		votingSystem: z.string(),
@@ -153,7 +153,7 @@ function ProfileForm({
 		const votingSystem = formData.get("votingSystem");
 
 		try {
-			const data = UpdateRoomSchema.parse({
+			const data = updateRoomSchema.parse({
 				roomName: name,
 				votingSystem,
 			});

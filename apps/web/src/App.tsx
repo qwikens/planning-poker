@@ -2,7 +2,8 @@ import { useNavigate } from "react-router-dom";
 
 import { HeaderLeft } from "@/components/header-left.tsx";
 import { Button } from "@/components/ui/button";
-export const App = () => {
+
+export const Component = () => {
 	const navigate = useNavigate();
 	const createRoom = () => navigate("/new-game");
 
@@ -18,3 +19,4 @@ export const App = () => {
 		</div>
 	);
 };
+Component.displayName = "App";

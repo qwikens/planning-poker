@@ -1,21 +1,27 @@
 import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { PokerPlanningSelect } from "@/components/ui/poker-planning-dropdown.tsx";
+import {
+	createRoom,
+	createSession,
+	getGuestName,
+	getSession,
+	saveGuestName,
+} from "@/lib/session";
 import { state } from "@/store.ts";
 import { ydoc } from "@/yjsDoc.ts";
 import { useClipboard } from "@mantine/hooks";
-import { nanoid } from "nanoid";
 import { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
-const CreateGameSchema = z.object({
+const createGameSchema = z.object({
 	gameName: z.string().default("Planning Poker Game"),
 	userName: z.string().min(1),
 	votingSystem: z.enum(["fibonacci"]),
 });
 
-export const CreateRoomForm = () => {
+const CreateGameForm = () => {
 	const navigate = useNavigate();
 	const { copy } = useClipboard();
 
@@ -26,20 +32,19 @@ export const CreateRoomForm = () => {
 		const gameName = formData.get("gameName");
 		const userName = formData.get("userName");
 		const votingSystem = formData.get("votingSystem");
-		const roomId = nanoid(7);
+		const roomId = createRoom();
 		const room = ydoc.getMap(`ui-state${roomId}`);
 
 		try {
-			const data = CreateGameSchema.parse({
+			const data = createGameSchema.parse({
 				gameName,
 				userName,
 				votingSystem,
 			});
 
 			const user = {
-				id: nanoid(),
+				id: getSession() ?? createSession(),
 				name: data.userName,
-				online: true,
 			};
 
 			const game = {
@@ -54,8 +59,7 @@ export const CreateRoomForm = () => {
 			};
 
 			room.set(roomId, game);
-			localStorage.setItem("guestUser", data.userName);
-			localStorage.setItem("guestUserId", user.id);
+			saveGuestName(data.userName);
 			state.room[roomId] = game;
 
 			const roomUrl = `${window.location.origin}/${roomId}`;
@@ -66,7 +70,6 @@ export const CreateRoomForm = () => {
 			return;
 		}
 	};
-	const currentUser = localStorage.getItem("guestUser") ?? "";
 
 	return (
 		<div>
@@ -88,7 +91,7 @@ export const CreateRoomForm = () => {
 							type="text"
 							placeholder="User Name"
 							name="userName"
-							defaultValue={currentUser}
+							defaultValue={getGuestName() ?? ""}
 						/>
 						<PokerPlanningSelect />
 					</div>
@@ -101,3 +104,8 @@ export const CreateRoomForm = () => {
 		</div>
 	);
 };
+
+export const Component = () => {
+	return <CreateGameForm />;
+};
+Component.displayName = "CreateGameForm";

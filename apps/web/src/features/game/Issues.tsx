@@ -40,16 +40,16 @@ import {
 	SheetTrigger,
 } from "@/components/ui/sheet";
 import useVimNavigation from "@/hooks/useVimNavigation";
+import { getSession } from "@/lib/session";
 import { cn } from "@/lib/utils.ts";
 import * as React from "react";
 
-const IssueSchema = z.object({
+const issueSchema = z.object({
 	title: z.string().min(1),
 });
 
 const CreateIssueForm = () => {
 	const { issues } = useDocuments();
-	const currentUser = localStorage.getItem("guestUser");
 	const id = useParams().id;
 	const inputRef = useRef<HTMLInputElement>(null);
 	useHotkeys([
@@ -62,12 +62,15 @@ const CreateIssueForm = () => {
 	]);
 
 	const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		const userId = getSession();
+		if (!userId) return;
+
 		event.preventDefault();
 		const formData = new FormData(event.currentTarget);
 		const title = formData.get("title");
 
 		try {
-			const data = IssueSchema.parse({
+			const data = issueSchema.parse({
 				title,
 			});
 			if (id) {
@@ -77,7 +80,7 @@ const CreateIssueForm = () => {
 						id: Date.now().toString(),
 						storyPoints: 0,
 						createdAt: Date.now(),
-						createdBy: currentUser ?? "guest",
+						createdBy: userId,
 						link: "https://qwikens.com",
 						title: data.title,
 					},

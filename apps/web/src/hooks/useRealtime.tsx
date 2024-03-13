@@ -19,18 +19,28 @@ export type Issue = {
 	title: string;
 };
 
+type Vote = {
+	votedBy: User;
+	vote: number | string;
+};
+
 export type VotingHistory = {
 	id?: string;
-	votes: { votedBy: string; vote: number | string }[];
+	votes: Vote[];
 	issueName?: string;
 	agreement: number; // average of votes
 	duration?: number; // start - end time in ms
 };
 
+type User = {
+	id: string;
+	name: string;
+};
+
 export type RoomState = {
-	votes: { votedBy: string; vote: number | string }[];
+	votes: Vote[];
 	currentVotingIssue?: Issue;
-	participants: { name: string; id: string; online: boolean }[];
+	participants: User[];
 	revealCards: boolean;
 	votingSystem: string;
 	name: string;

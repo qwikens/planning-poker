@@ -1,17 +1,21 @@
 import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
-import { useHocusPocus } from "@/hooks/useHocuspocus.tsx";
 import { useDocuments } from "@/hooks/useRealtime.tsx";
+import {
+	createSession,
+	getGuestName,
+	getSession,
+	saveGuestName,
+} from "@/lib/session";
 import { state } from "@/store.ts";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
-const CreateUserSchema = z.object({
+const createUserSchema = z.object({
 	userName: z.string().trim().min(1),
 });
 export const CreateUserForm = ({ roomId }: { roomId: string }) => {
 	const navigate = useNavigate();
-	const { clientId } = useHocusPocus();
 
 	const { room } = useDocuments();
 
@@ -22,22 +26,19 @@ export const CreateUserForm = ({ roomId }: { roomId: string }) => {
 		const userName = formData.get("userName");
 
 		try {
-			const data = CreateUserSchema.parse({
+			const data = createUserSchema.parse({
 				userName,
 			});
 
 			const user = {
-				id: String(clientId),
+				id: getSession() ?? createSession(),
 				name: data.userName,
-				online: true,
 			};
-
+			saveGuestName(data.userName);
 			room.set(roomId, {
 				...state.room[roomId],
 				participants: [...(state.room[roomId]?.participants ?? []), user],
 			});
-
-			localStorage.setItem("guestUser", data.userName);
 
 			navigate(`/${roomId}`);
 		} catch (error) {
@@ -55,7 +56,7 @@ export const CreateUserForm = ({ roomId }: { roomId: string }) => {
 					type="text"
 					placeholder="User Name"
 					name="userName"
-					defaultValue={localStorage.getItem("guestUser") ?? ""}
+					defaultValue={getGuestName() ?? ""}
 				/>
 				<Button type="submit">Create</Button>
 			</div>

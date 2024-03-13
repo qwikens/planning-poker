@@ -10,11 +10,12 @@ import {
 import { useRef } from "react";
 import { useSnapshot } from "valtio";
 
+import { getSession } from "@/lib/session";
 import { useDocuments } from "../../hooks/useRealtime";
 import { cn } from "../../lib/utils";
 import { state } from "../../store";
 
-export function Dock({ roomId }: { roomId: string }) {
+export function Deck({ roomId }: { roomId: string }) {
 	const mouseX = useMotionValue(Infinity);
 	const isMobile = useMediaQuery("(max-width: 768px)");
 
@@ -36,7 +37,7 @@ export function Dock({ roomId }: { roomId: string }) {
 	if (isMobile) {
 		return null;
 	}
-	// need to be based on the voting system
+	// TODO: need to be based on the voting system
 	const optionsList: Record<string, number[] | string[]> = {
 		"t-shirt": ["S", "M", "L", "XL", "XXL", "?", "☕"],
 		fibonacci: [1, 2, 3, 5, 8, 13, 21, 34],
@@ -48,12 +49,16 @@ export function Dock({ roomId }: { roomId: string }) {
 	const { room } = useDocuments();
 
 	const onVote = (option: number | string) => {
+		const userId = getSession();
+		const user = snap.room[roomId]?.participants?.find(
+			(participant) => participant.id === userId,
+		);
+
+		if (!user) return;
+
 		const existingVotesWithoutMine =
-			room
-				.get(roomId)
-				?.votes?.filter(
-					(vote) => vote.votedBy !== localStorage.getItem("guestUser"),
-				) ?? [];
+			room.get(roomId)?.votes?.filter((vote) => vote.votedBy.id !== user.id) ??
+			[];
 
 		room.set(roomId, {
 			...state.room[roomId],
@@ -61,7 +66,7 @@ export function Dock({ roomId }: { roomId: string }) {
 			votes: [
 				...existingVotesWithoutMine,
 				{
-					votedBy: localStorage.getItem("guestUser") ?? "guest",
+					votedBy: user,
 					vote: option,
 				},
 			],
@@ -69,10 +74,8 @@ export function Dock({ roomId }: { roomId: string }) {
 	};
 
 	const activeTab = snap.room[roomId]?.votes?.find(
-		(vote) => vote.votedBy === localStorage.getItem("guestUser"),
+		(vote) => vote.votedBy.id === getSession(),
 	);
-
-	// TODO: add verification, vote only if revealCards is false
 
 	return (
 		<AnimatePresence>

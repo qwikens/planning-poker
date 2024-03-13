@@ -2,6 +2,7 @@ import { HocuspocusProvider } from "@hocuspocus/provider";
 import { createContext, useContext } from "react";
 import { type Doc } from "yjs";
 
+import { createSession, getSession } from "@/lib/session";
 import { WS_URL } from "../lib/env";
 
 type HocusPocusProviderProps = {
@@ -37,7 +38,7 @@ export const HocusPocusProvider = ({
 		url: WS_URL,
 		name: roomId,
 		document: ydoc,
-		token: () => "default-token",
+		token: () => getSession() ?? createSession(),
 		parameters: {
 			roomId,
 		},
