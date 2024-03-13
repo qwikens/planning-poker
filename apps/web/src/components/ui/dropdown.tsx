@@ -45,7 +45,11 @@ export function IssueDropdownMenu({
 	const moreRef = useRef<HTMLButtonElement>(null);
 
 	useHotkeys([
-		["Enter", cardFocused && !open ? onCardClick : () => {}],
+		[
+			"Enter",
+			cardFocused && !open ? onCardClick : () => {},
+			{ preventDefault: false },
+		],
 		[
 			"mod+Backspace",
 			cardFocused

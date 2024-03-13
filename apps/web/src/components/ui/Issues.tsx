@@ -117,7 +117,9 @@ function IssueCard(props: {
 }) {
 	const { ref, focused } = useFocusWithin();
 
-	useHotkeys([["Enter", focused ? props.onClick : () => {}]]);
+	useHotkeys([
+		["Enter", focused ? props.onClick : () => {}, { preventDefault: false }],
+	]);
 
 	const currentVoting =
 		props.roomState?.currentVotingIssue?.id === props.issue.id;
