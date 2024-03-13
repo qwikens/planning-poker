@@ -9,7 +9,7 @@ const Kbd = React.forwardRef<KbdElement, KbdProps>((props, forwardedRef) => {
 			{...props}
 			ref={forwardedRef}
 			className={cn(
-				"inline-block p-1 text-center text-foreground/80 capitalize align-baseline bg-secondary border-[0.5px] border-foreground/10 shadow shadow-md cursor-default  select-none font-style-normal whitespace-nowrap leading-[110%] text-[11px]  rounded-sm min-w-[20px]",
+				"inline-block p-1 text-center text-foreground/80 capitalize align-baseline bg-secondary border-[0.5px] border-foreground/10 shadow shadow-sm cursor-default  select-none font-style-normal whitespace-nowrap leading-[110%] text-[11px]  rounded-sm min-w-[20px]",
 				props.className,
 			)}
 		/>

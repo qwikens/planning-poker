@@ -1,41 +1,40 @@
+import { state } from "@/store.ts";
 import { useHotkeys } from "@mantine/hooks";
-import { useState } from "react";
+import { useSnapshot } from "valtio";
 
 const useVimNavigation = () => {
-	const [currentIndex, setCurrentIndex] = useState(0);
+	const currentIndex = useSnapshot(state).currentIndex;
 
 	const Down = () => {
-		setCurrentIndex((prevIndex) => {
-			const nextIndex = prevIndex + 1;
+		const nextIndex = currentIndex + 1;
 
-			const element = document.querySelector(
-				`[data-vim-position="${nextIndex}"]`,
-			);
+		const element = document.querySelector(
+			`[data-vim-position="${nextIndex}"]`,
+		);
 
-			if (element instanceof HTMLElement) {
-				element.focus();
-				return nextIndex;
-			}
+		if (element instanceof HTMLElement) {
+			element.focus();
 
-			return prevIndex;
-		});
+			state.currentIndex = nextIndex;
+			return;
+		}
+
+		state.currentIndex = currentIndex;
 	};
 
 	const Up = () => {
-		setCurrentIndex((prevIndex) => {
-			const nextIndex = prevIndex - 1;
+		const nextIndex = currentIndex - 1;
 
-			const element = document.querySelector(
-				`[data-vim-position="${nextIndex}"]`,
-			);
+		const element = document.querySelector(
+			`[data-vim-position="${nextIndex}"]`,
+		);
 
-			if (element instanceof HTMLElement) {
-				element.focus();
-				return nextIndex;
-			}
+		if (element instanceof HTMLElement) {
+			element.focus();
+			state.currentIndex = nextIndex;
+		}
 
-			return prevIndex;
-		});
+		return currentIndex;
 	};
 
 	useHotkeys([
@@ -45,7 +44,11 @@ const useVimNavigation = () => {
 		["ArrowUp", Up],
 	]);
 
-	return currentIndex;
+	return {
+		currentIndex,
+		next: Down,
+		prev: Up,
+	};
 };
 
 export default useVimNavigation;

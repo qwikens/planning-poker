@@ -1,3 +1,4 @@
+import { toast } from "@/components/ui/use-toast.ts";
 import { useDocuments } from "@/hooks/useRealtime.tsx";
 import { state } from "@/store.ts";
 import { useHotkeys } from "@mantine/hooks";
@@ -11,6 +12,16 @@ export const VoteNext = ({ roomId }: { roomId: string }) => {
 		const currentIssueId = snap.room[roomId]?.currentVotingIssue?.id;
 		const currentIssues = snap.issues[roomId];
 
+		if (
+			snap.room[roomId]?.votes.length > 0 &&
+			!snap.room[roomId]?.revealCards
+		) {
+			toast({
+				title: "Can't move to the next issue, reveal the cards first",
+			});
+			return;
+		}
+
 		if (!currentIssueId || !currentIssues) {
 			return;
 		}
@@ -21,8 +32,15 @@ export const VoteNext = ({ roomId }: { roomId: string }) => {
 			room.set(roomId, {
 				...state.room[roomId],
 				currentVotingIssue: nextIssue,
+				revealCards: false,
+				votes: [],
 			});
+			return;
 		}
+
+		toast({
+			title: "No more issues to vote on",
+		});
 	};
 
 	useHotkeys([["n", onVoteNext]]);

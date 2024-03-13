@@ -1,4 +1,4 @@
-import { useMediaQuery } from "@mantine/hooks";
+import { useHotkeys, useMediaQuery } from "@mantine/hooks";
 import {
 	AnimatePresence,
 	MotionValue,
@@ -19,6 +19,19 @@ export function Dock({ roomId }: { roomId: string }) {
 	const isMobile = useMediaQuery("(max-width: 768px)");
 
 	const snap = useSnapshot(state);
+
+	useHotkeys([
+		["1", () => onVote(1)],
+		["2", () => onVote(2)],
+		["3", () => onVote(3)],
+		["4", () => onVote(5)],
+		["5", () => onVote(8)],
+		["6", () => onVote(13)],
+		["7", () => onVote(21)],
+		["8", () => onVote(34)],
+		["9", () => onVote("☕")],
+		["0", () => onVote("?")],
+	]);
 
 	if (isMobile) {
 		return null;
@@ -54,9 +67,12 @@ export function Dock({ roomId }: { roomId: string }) {
 			],
 		});
 	};
+
 	const activeTab = snap.room[roomId]?.votes?.find(
 		(vote) => vote.votedBy === localStorage.getItem("guestUser"),
 	);
+
+	// add verification, vote only if revealCards is false
 
 	return (
 		<AnimatePresence>

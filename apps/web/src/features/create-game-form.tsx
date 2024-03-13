@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
+import { PokerPlanningSelect } from "@/components/ui/poker-planning-dropdown.tsx";
 import { state } from "@/store.ts";
 import { ydoc } from "@/yjsDoc.ts";
 import { useClipboard } from "@mantine/hooks";
@@ -7,7 +8,6 @@ import { nanoid } from "nanoid";
 import { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
-import { PokerPlanningSelect } from "@/components/ui/poker-planning-dropdown.tsx";
 
 const CreateGameSchema = z.object({
 	gameName: z.string().default("Planning Poker Game"),

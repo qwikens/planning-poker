@@ -1,30 +1,29 @@
-import { Issues } from "@/components/ui/issues.tsx";
-import { Dock } from "@/components/ui/deck.tsx";
-import { GameSettingsModal } from "@/components/ui/modal.tsx";
-import { Toaster } from "@/components/ui/toaster.tsx";
+import { Issues } from "@/components/ui/Issues.tsx";
+import { Dock } from "@/components/ui/deck";
+import { GameSettingsModal } from "@/components/ui/modal";
+import { Toaster } from "@/components/ui/toaster";
+import { CopyToClipboard } from "@/features/copy-to-clipboard";
+import { CreateUserForm } from "@/features/create-user-form";
+import { RevealCards } from "@/features/reveal-cards";
+import { VoteNext } from "@/features/vote-next.tsx";
+import { VotingResult } from "@/features/voting-result.tsx";
 import { HocusPocusProvider } from "@/hooks/useHocuspocus.tsx";
 import { RealtimeProvider } from "@/hooks/useRealtime.tsx";
 import { state } from "@/store.ts";
 import { ydoc } from "@/yjsDoc.ts";
 import { useDocumentTitle } from "@mantine/hooks";
-import { QRCodeSVG } from "qrcode.react";
 import { useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
 import { HeaderLeft } from "./components/header-left";
-import { CreateUserForm } from "@/features/create-user-form.tsx";
-import { CopyToClipboard } from "@/features/copy-to-clipboard.tsx";
-import { VotingResult } from "@/features/voting-result.tsx";
-import { VoteNext } from "@/features/vote-next.tsx";
-import { RevealCards } from "@/features/reveal-cards.tsx";
 
 export const Game = () => {
 	const id = useParams().id;
 	const snapRoom = useSnapshot(state);
-
 	const currentIssue = id ? snapRoom.room[id]?.currentVotingIssue : undefined;
 	const title = currentIssue
 		? `Voting ${currentIssue.title}`
 		: "Planning Poker";
+
 	useDocumentTitle(title);
 
 	if (!id) {
@@ -90,10 +89,10 @@ export const Game = () => {
 						</div>
 
 						<div className="hidden flex-col items-center gap-4 xl:flex flex-auto max-w-[372px] w-full duration-150 ease-in-out mt-20 min-w-[350px]">
-							<QRCodeSVG
-								value={url}
-								className="hidden md:block mx-auto  w-[200px] h-[200px] qr-code"
-							/>
+							{/*<QRCodeSVG*/}
+							{/*	value={url}*/}
+							{/*	className="hidden md:block mx-auto  w-[200px] h-[200px] qr-code"*/}
+							{/*/>*/}
 						</div>
 					</div>
 				</div>

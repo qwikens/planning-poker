@@ -1,8 +1,9 @@
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, useMemo } from "react";
 import { bind } from "valtio-yjs";
 import * as Y from "yjs";
 
 import { state } from "@/store";
+import { HotkeyItem, useHotkeys } from "@mantine/hooks";
 import { useHocusPocus } from "./useHocuspocus";
 
 type RealtimeProviderProps = {
@@ -42,6 +43,7 @@ type RealtimeContextType = {
 	issues: Y.Map<Issue[]>;
 	room: Y.Map<RoomState>;
 	votingHistory: Y.Array<VotingHistory>;
+	undoManagerIssues: Y.UndoManager;
 };
 
 const RealtimeContext = createContext<RealtimeContextType | undefined>(
@@ -64,6 +66,8 @@ export const RealtimeProvider = ({ children }: RealtimeProviderProps) => {
 		`vote-history${roomId}`,
 	);
 
+	const undoManagerIssues = useMemo(() => new Y.UndoManager(issues), [issues]);
+
 	useEffect(() => {
 		const unbind = bind(state.issues, issues);
 		const unbindUiState = bind(state.room, room);
@@ -74,11 +78,41 @@ export const RealtimeProvider = ({ children }: RealtimeProviderProps) => {
 		};
 	}, [issues, room]);
 
+	const handleHotkey = (shortcut: string): HotkeyItem => {
+		return [
+			shortcut,
+			(event: KeyboardEvent) => {
+				event.preventDefault();
+				undoManagerIssues.undo();
+
+				if (process.env.NODE_ENV === "development") {
+					console.log(`Shortcut executed: ${shortcut}`);
+				}
+			},
+		];
+	};
+
+	useHotkeys(
+		[
+			handleHotkey("mod+z"),
+
+			[
+				"shift+mod+z",
+				(event) => {
+					event.preventDefault();
+					undoManagerIssues.redo();
+				},
+			],
+		],
+		[],
+	);
+
 	return (
 		<RealtimeContext.Provider
 			value={{
 				issues,
 				room,
+				undoManagerIssues,
 				votingHistory,
 			}}
 		>

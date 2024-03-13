@@ -1,8 +1,8 @@
+import { QwikensLogoSvg } from "@/components/qwikens-logo-svg.tsx";
 import { NetworkStatus } from "@/components/ui/network-status.tsx";
+import { TextAnimatedGradient } from "@/components/ui/text-animated.tsx";
 import { state } from "@/store.ts";
 import { useSnapshot } from "valtio";
-import { QwikensLogoSvg } from "@/components/qwikens-logo-svg.tsx";
-import { TextAnimatedGradient } from "@/components/ui/text-animated.tsx";
 
 export const HeaderLeft = ({ id }: { id?: string } = {}) => {
 	const { room } = useSnapshot(state);
@@ -10,7 +10,7 @@ export const HeaderLeft = ({ id }: { id?: string } = {}) => {
 
 	return (
 		<div className="flex items-center gap-4">
-			<div className="relative flex items-center">
+			<div className="relative flex items-center text-primary">
 				<QwikensLogoSvg />
 				<NetworkStatus />
 			</div>
