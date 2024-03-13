@@ -5,45 +5,45 @@ import { useHotkeys } from "@mantine/hooks";
 import { useSnapshot } from "valtio";
 
 export const VoteNext = ({ roomId }: { roomId: string }) => {
-	const snap = useSnapshot(state);
-	const { room } = useDocuments();
+  const snap = useSnapshot(state);
+  const { room } = useDocuments();
 
-	const onVoteNext = () => {
-		const currentIssueId = snap.room[roomId]?.currentVotingIssue?.id;
-		const currentIssues = snap.issues[roomId];
+  const onVoteNext = () => {
+    const currentIssueId = snap.room[roomId]?.currentVotingIssue?.id;
+    const currentIssues = snap.issues[roomId];
 
-		if (
-			snap.room[roomId]?.votes.length > 0 &&
-			!snap.room[roomId]?.revealCards
-		) {
-			toast({
-				title: "Can't move to the next issue, reveal the cards first",
-			});
-			return;
-		}
+    if (
+      snap.room[roomId]?.votes.length > 0 &&
+      !snap.room[roomId]?.revealCards
+    ) {
+      toast({
+        title: "Can't move to the next issue, reveal the cards first",
+      });
+      return;
+    }
 
-		if (!currentIssueId || !currentIssues) {
-			return;
-		}
+    if (!currentIssueId || !currentIssues) {
+      return;
+    }
 
-		const nextIssue = currentIssues.find((issue) => issue.storyPoints === 0);
+    const nextIssue = currentIssues.find((issue) => issue.storyPoints === 0);
 
-		if (nextIssue) {
-			room.set(roomId, {
-				...state.room[roomId],
-				currentVotingIssue: nextIssue,
-				revealCards: false,
-				votes: [],
-			});
-			return;
-		}
+    if (nextIssue) {
+      room.set(roomId, {
+        ...state.room[roomId],
+        currentVotingIssue: nextIssue,
+        revealCards: false,
+        votes: [],
+      });
+      return;
+    }
 
-		toast({
-			title: "No more issues to vote on",
-		});
-	};
+    toast({
+      title: "No more issues to vote on",
+    });
+  };
 
-	useHotkeys([["n", onVoteNext]]);
+  useHotkeys([["n", onVoteNext]]);
 
-	return null;
+  return null;
 };

@@ -31,7 +31,7 @@ import type { UserConfig } from "@commitlint/types";
  * - `chore`: update dependencies to latest versions
  */
 const configuration: UserConfig = {
-	extends: ["@commitlint/config-conventional"],
+  extends: ["@commitlint/config-conventional"],
 };
 
 export default configuration;
