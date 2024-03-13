@@ -58,7 +58,7 @@ export const CreateUserForm = ({ roomId }: { roomId: string }) => {
           name="userName"
           defaultValue={getGuestName() ?? ""}
         />
-        <Button type="submit">Create</Button>
+        <Button type="submit">Join</Button>
       </div>
     </form>
   );
