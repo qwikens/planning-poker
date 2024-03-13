@@ -221,7 +221,6 @@ const IssueList = () => {
 		});
 
 		issues.set(id, []);
-		// 				data-testid="create-issue-input"
 
 		const input = document.querySelector(
 			"[data-testid=create-issue-input]",
