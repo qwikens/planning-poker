@@ -6,6 +6,7 @@ import { CreateRoomForm } from "@/features/create-game-form.tsx";
 import { Game } from "@/game.tsx";
 import { App } from "./App";
 import "./global.css";
+import { ThemeProvider } from "@/hooks/theme-provider.tsx";
 
 const router = createBrowserRouter([
 	{
@@ -25,6 +26,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root") ?? document.body).render(
 	<React.StrictMode>
-		<RouterProvider router={router} />
+		<ThemeProvider defaultTheme={"dark"}>
+			<RouterProvider router={router} />
+		</ThemeProvider>
 	</React.StrictMode>,
 );
