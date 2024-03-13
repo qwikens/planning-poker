@@ -1,8 +1,9 @@
-import { useHotkeys } from "@mantine/hooks";
+import { getHotkeyHandler, useFocusWithin, useHotkeys } from "@mantine/hooks";
 import { AnimatePresence, motion } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
+
 import { z } from "zod";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -13,20 +14,34 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { Issue, useDocuments } from "@/hooks/useRealtime";
+import { Issue, RoomState, useDocuments } from "@/hooks/useRealtime";
 import { state } from "@/store";
 
 import { Button } from "@/components/ui/button";
 
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog.tsx";
+import { IssueDropdownMenu } from "@/components/ui/dropdown.tsx";
 import { Input } from "@/components/ui/input";
+import { Kbd } from "@/components/ui/kbd.tsx";
 import {
 	Sheet,
 	SheetContent,
-	SheetDescription,
 	SheetHeader,
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
+import useVimNavigation from "@/hooks/useVimNavigation";
+import { cn } from "@/lib/utils.ts";
+import * as React from "react";
 
 const IssueSchema = z.object({
 	title: z.string().min(1),
@@ -37,6 +52,14 @@ const CreateIssueForm = () => {
 	const currentUser = localStorage.getItem("guestUser");
 	const id = useParams().id;
 	const inputRef = useRef<HTMLInputElement>(null);
+	useHotkeys([
+		[
+			"c",
+			() => {
+				if (inputRef.current) inputRef.current.focus();
+			},
+		],
+	]);
 
 	const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -77,17 +100,74 @@ const CreateIssueForm = () => {
 				type="text"
 				placeholder="Issue title"
 				name="title"
+				data-testid="create-issue-input"
 				ref={inputRef}
 			/>
-			<Button variant="outline">Add an issue</Button>
 		</form>
 	);
 };
 
+function IssueCard(props: {
+	roomState: RoomState;
+	issue: Issue;
+	"data-vim-position": number;
+	onClick: () => void;
+	onDelete: () => void;
+	onDeleteAll: () => void;
+}) {
+	const { ref, focused } = useFocusWithin();
+
+	useHotkeys([
+		["Enter", focused ? props.onClick : () => {}, { preventDefault: false }],
+	]);
+
+	const currentVoting =
+		props.roomState?.currentVotingIssue?.id === props.issue.id;
+
+	return (
+		<motion.div
+			data-vim-position={props["data-vim-position"]}
+			onClick={props.onClick}
+			tabIndex={0}
+			ref={ref}
+			style={{ overflow: "hidden" }}
+			className={cn(
+				"flex ring-offset-background mx-1 focus-visible:outline-none focus-visible:ring-ring/50   focus-visible:ring-offset-2 focus-visible:ring-1 flex-col  px-3 py-2 mt-2 bg-secondary/40 border rounded-md border-border transition-background ",
+				{
+					"bg-primary/20": currentVoting,
+					"border-primary/50": currentVoting,
+				},
+			)}
+		>
+			<div className={"flex justify-between items-center"}>
+				<p className={"text-sm"}>{props.issue.title}</p>
+				<IssueDropdownMenu
+					issue={props.issue}
+					onDelete={props.onDelete}
+					onCardClick={props.onClick}
+					cardFocused={focused}
+					index={props["data-vim-position"]}
+				/>
+			</div>
+
+			<div />
+
+			<div className="flex items-center justify-between gap-2 mt-2">
+				<div>
+					<p className={"text-sm text-foreground/40"}>{props.issue.id}</p>
+				</div>
+				<span className="flex text-sm items-center gap-2">
+					{props.issue.storyPoints}
+				</span>
+			</div>
+		</motion.div>
+	);
+}
+
 const IssueList = () => {
 	const snap = useSnapshot(state);
 	const id = useParams().id;
-	const { room } = useDocuments();
+	const { room, issues } = useDocuments();
 
 	if (!id) {
 		return <div>Room id is required</div>;
@@ -110,50 +190,127 @@ const IssueList = () => {
 
 	const roomIssues = snap.issues[id] ?? [];
 
+	const documentIssues = issues.get(id) ?? [];
+
+	const onDelete = (issueId: string) => {
+		const updatedIssues = documentIssues.filter(
+			(issue) => issue.id !== issueId,
+		);
+
+		if (
+			roomState.currentVotingIssue &&
+			roomState.currentVotingIssue.id === issueId
+		) {
+			room.set(id, {
+				...state.room[id],
+				revealCards: false,
+				votes: [],
+				currentVotingIssue: undefined,
+			});
+		}
+
+		issues.set(id, updatedIssues);
+	};
+
+	const onDeleteAll = () => {
+		room.set(id, {
+			...state.room[id],
+			revealCards: false,
+			votes: [],
+			currentVotingIssue: undefined,
+		});
+
+		issues.set(id, []);
+
+		const input = document.querySelector(
+			"[data-testid=create-issue-input]",
+		) as HTMLInputElement;
+
+		if (input) {
+			input.focus();
+		}
+	};
+	const [deleteOpen, setDeleteOpen] = useState(false);
+
+	useHotkeys([["mod+Shift+Backspace", () => setDeleteOpen(true)]]);
+
 	if (!roomState) {
 		return null;
 	}
 
 	return (
-		<ScrollArea className="h-[78dvh] rounded-md pb-10">
+		<ScrollArea className="h-[85dvh] rounded-md pb-10 px-4">
 			<AnimatePresence initial={false}>
 				{roomIssues
 					.slice()
 					.reverse()
-					.map((issue) => (
-						<motion.div
+					.map((issue, index) => (
+						<IssueCard
 							key={issue.id}
-							style={{ overflow: "hidden" }}
-							className="flex flex-col gap-2 p-4 mt-2 border rounded-md border-border"
-						>
-							<div>
-								<p>{issue.title}</p>
-							</div>
-
-							<div className="flex items-center gap-2 mt-2">
-								<Button
-									onClick={() => {
-										setActiveIssue(issue);
-									}}
-									variant={
-										roomState?.currentVotingIssue?.id === issue.id
-											? "default"
-											: "secondary"
-									}
-									className="max-w-fit"
-								>
-									{roomState?.currentVotingIssue?.id === issue.id
-										? "Voting now..."
-										: "Vote this issue"}
-								</Button>
-
-								<div className="flex items-center gap-2">
-									{issue.storyPoints}
-								</div>
-							</div>
-						</motion.div>
+							data-vim-position={index}
+							onDelete={() => {
+								onDelete(issue.id);
+							}}
+							onDeleteAll={onDeleteAll}
+							roomState={roomState as RoomState}
+							issue={issue}
+							onClick={() => {
+								setActiveIssue(issue);
+							}}
+						/>
 					))}
 			</AnimatePresence>
+
+			<AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+				<AlertDialogContent
+					onCloseAutoFocus={() => {
+						const input = document.querySelector(
+							"[data-testid=create-issue-input]",
+						) as HTMLInputElement;
+
+						if (input) {
+							input.focus();
+						}
+					}}
+				>
+					<AlertDialogHeader>
+						<AlertDialogTitle>
+							Are you sure you want to delete all issues?
+						</AlertDialogTitle>
+						<AlertDialogDescription>
+							You can undo this action by pressing <Kbd>Command</Kbd> +{" "}
+							<Kbd>z</Kbd>
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel
+							onKeyDown={getHotkeyHandler([
+								["Enter", () => setDeleteOpen(false)],
+							])}
+						>
+							Cancel
+						</AlertDialogCancel>
+						<AlertDialogAction
+							autoFocus={deleteOpen}
+							onKeyDown={getHotkeyHandler([
+								[
+									"Enter",
+									() => {
+										setDeleteOpen(false);
+										onDeleteAll();
+									},
+								],
+							])}
+							onClick={() => {
+								setDeleteOpen(false);
+								onDeleteAll();
+							}}
+						>
+							Continue
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</ScrollArea>
 	);
 };
@@ -161,22 +318,22 @@ const IssueList = () => {
 export const Issues = () => {
 	const open = useSnapshot(state).issuesOpen;
 	const buttonRef = useRef<HTMLButtonElement>(null);
+	useVimNavigation();
+	const { ref, focused } = useFocusWithin();
 
-	useHotkeys(
+	useHotkeys([
 		[
-			[
-				"Escape",
-				() => {
-					if (state.issuesOpen) {
-						state.issuesOpen = false;
+			"Escape",
+			() => {
+				if (state.issuesOpen && focused) {
+					state.issuesOpen = false;
 
-						buttonRef.current?.focus();
-					}
-				},
-			],
+					buttonRef.current?.focus();
+				}
+			},
+			{ preventDefault: false },
 		],
-		[],
-	);
+	]);
 
 	useHotkeys([
 		[
@@ -197,10 +354,10 @@ export const Issues = () => {
 			}}
 		>
 			<TooltipProvider>
-				<Tooltip delayDuration={0}>
+				<Tooltip>
 					<TooltipTrigger asChild>
 						<SheetTrigger asChild>
-							<Button ref={buttonRef} variant="outline">
+							<Button ref={buttonRef} variant="ghost" size={"icon"}>
 								{open ? (
 									<svg
 										width="16"
@@ -242,15 +399,16 @@ export const Issues = () => {
 				</Tooltip>
 			</TooltipProvider>
 			<SheetContent
-				className="m-auto top-[114px] sm:max-w-full md:max-w-full w-full lg:w-full lg:max-w-[420px] data-[state=open]:slide-in-from-right"
+				ref={ref}
+				className="m-auto top-[114px] sm:max-w-full md:max-w-full w-full lg:w-full lg:max-w-[370px] data-[state=open]:slide-in-from-right p-0"
 				onInteractOutside={(event) => event.preventDefault()}
 			>
-				<SheetHeader>
+				<SheetHeader className={"p-4 px-4 mx-1"}>
 					<SheetTitle>Issues</SheetTitle>
-					<SheetDescription>Create issues and vote</SheetDescription>
 					<CreateIssueForm />
-					<IssueList />
 				</SheetHeader>
+
+				<IssueList />
 			</SheetContent>
 		</Sheet>
 	);
