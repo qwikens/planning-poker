@@ -15,6 +15,7 @@ import { useDocumentTitle } from "@mantine/hooks";
 import { useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
 import { HeaderLeft } from "./components/header-left";
+import { QRCodeSVG } from "qrcode.react";
 
 export const Game = () => {
 	const id = useParams().id;
@@ -89,10 +90,10 @@ export const Game = () => {
 						</div>
 
 						<div className="hidden flex-col items-center gap-4 xl:flex flex-auto max-w-[372px] w-full duration-150 ease-in-out mt-20 min-w-[350px]">
-							{/*<QRCodeSVG*/}
-							{/*	value={url}*/}
-							{/*	className="hidden md:block mx-auto  w-[200px] h-[200px] qr-code"*/}
-							{/*/>*/}
+							<QRCodeSVG
+								value={url}
+								className="hidden md:block mx-auto  w-[200px] h-[200px] qr-code"
+							/>
 						</div>
 					</div>
 				</div>

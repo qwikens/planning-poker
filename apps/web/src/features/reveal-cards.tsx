@@ -7,7 +7,7 @@ import { useSnapshot } from "valtio";
 
 export const RevealCards = ({ roomId }: { roomId: string }) => {
 	const snap = useSnapshot(state);
-	const { room, issues } = useDocuments();
+	const { room, issues, votingHistory } = useDocuments();
 
 	const onRevealCards = () => {
 		if (snap.room[roomId].votes?.map((vote) => vote.vote).length === 0) return;
@@ -18,18 +18,13 @@ export const RevealCards = ({ roomId }: { roomId: string }) => {
 			return issue.id === snap.room[roomId]?.currentVotingIssue?.id;
 		});
 
-		if (index === undefined) {
-			room.set(roomId, {
-				...state.room[roomId],
-				revealCards: true,
-			});
-			return;
-		}
+		// add a new voting history here
+		const storyPoints = mean(snap.room[roomId].votes?.map((vote) => vote.vote));
 
-		if (index !== -1) {
+		if (index && index !== -1) {
 			const updated = {
 				...currentIssues[index],
-				storyPoints: mean(snap.room[roomId].votes?.map((vote) => vote.vote)),
+				storyPoints,
 			};
 
 			const updatedIssues = update(index, updated, [...currentIssues]);
@@ -40,6 +35,18 @@ export const RevealCards = ({ roomId }: { roomId: string }) => {
 				});
 			}
 		}
+
+		votingHistory.set(roomId, [
+			// @ts-expect-error mismatch of types, readonly needs fixing
+			...(state?.votingHistory[roomId] ?? []),
+			{
+				id: snap.room[roomId].currentVotingIssue?.id,
+				// @ts-expect-error mismatch of types, readonly needs fixing
+				votes: snap.room[roomId].votes,
+				issueName: snap.room[roomId].currentVotingIssue?.title,
+				agreement: storyPoints,
+			},
+		]);
 
 		room.set(roomId, {
 			...state.room[roomId],

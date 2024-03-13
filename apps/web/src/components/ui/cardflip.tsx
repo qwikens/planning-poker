@@ -28,7 +28,12 @@ const CardFlip = ({
 				className={`card ${randomSuit} `}
 				htmlFor={randomSuit}
 			>
-				<input type="checkbox" id={randomSuit} checked={!canShowVote} />
+				<input
+					type="checkbox"
+					id={randomSuit}
+					checked={!canShowVote}
+					readOnly
+				/>
 				<div className="back" />
 				<div className="front">
 					<div className="num-box top suit">{value ?? "A"}</div>

@@ -20,11 +20,11 @@ export type Issue = {
 };
 
 export type VotingHistory = {
-	id: string;
-	votes: { votedBy: string; vote: number }[];
+	id?: string;
+	votes: { votedBy: string; vote: number | string }[];
 	issueName?: string;
 	agreement: number; // average of votes
-	duration: number; // start - end time in ms
+	duration?: number; // start - end time in ms
 };
 
 export type RoomState = {
@@ -42,7 +42,7 @@ export type RoomState = {
 type RealtimeContextType = {
 	issues: Y.Map<Issue[]>;
 	room: Y.Map<RoomState>;
-	votingHistory: Y.Array<VotingHistory>;
+	votingHistory: Y.Map<VotingHistory[]>;
 	undoManagerIssues: Y.UndoManager;
 };
 
@@ -62,7 +62,7 @@ export const RealtimeProvider = ({ children }: RealtimeProviderProps) => {
 	const { provider, roomId } = useHocusPocus();
 	const room = provider.document.getMap<RoomState>(`ui-state${roomId}`);
 	const issues = provider.document.getMap<Issue[]>(`issues-${roomId}`);
-	const votingHistory = provider.document.getArray<VotingHistory>(
+	const votingHistory = provider.document.getMap<VotingHistory[]>(
 		`vote-history${roomId}`,
 	);
 
@@ -71,12 +71,14 @@ export const RealtimeProvider = ({ children }: RealtimeProviderProps) => {
 	useEffect(() => {
 		const unbind = bind(state.issues, issues);
 		const unbindUiState = bind(state.room, room);
+		const unbindVotingHistory = bind(state.votingHistory, votingHistory);
 
 		return () => {
 			unbind();
 			unbindUiState();
+			unbindVotingHistory();
 		};
-	}, [issues, room]);
+	}, [issues, room, votingHistory]);
 
 	const handleHotkey = (shortcut: string): HotkeyItem => {
 		return [

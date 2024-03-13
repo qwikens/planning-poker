@@ -4,9 +4,10 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import { CreateRoomForm } from "@/features/create-game-form.tsx";
 import { Game } from "@/game.tsx";
+import { ThemeProvider } from "@/hooks/theme-provider.tsx";
 import { App } from "./App";
 import "./global.css";
-import { ThemeProvider } from "@/hooks/theme-provider.tsx";
+import { HistoryTable } from "@/components/ui/history-table.tsx";
 
 const router = createBrowserRouter([
 	{
@@ -17,6 +18,11 @@ const router = createBrowserRouter([
 	{
 		path: "/:id",
 		element: <Game />,
+	},
+
+	{
+		path: "/:id/history",
+		element: <HistoryTable />,
 	},
 	{
 		path: "new-game",

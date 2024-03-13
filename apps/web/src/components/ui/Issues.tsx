@@ -126,7 +126,7 @@ function IssueCard(props: {
 
 	return (
 		<motion.div
-			{...props}
+			onClick={props.onClick}
 			tabIndex={0}
 			ref={ref}
 			style={{ overflow: "hidden" }}
