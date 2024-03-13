@@ -12,10 +12,10 @@ import { RealtimeProvider } from "@/hooks/useRealtime.tsx";
 import { state } from "@/store.ts";
 import { ydoc } from "@/yjsDoc.ts";
 import { useDocumentTitle } from "@mantine/hooks";
+import { QRCodeSVG } from "qrcode.react";
 import { useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
 import { HeaderLeft } from "./components/header-left";
-import { QRCodeSVG } from "qrcode.react";
 
 export const Game = () => {
 	const id = useParams().id;
