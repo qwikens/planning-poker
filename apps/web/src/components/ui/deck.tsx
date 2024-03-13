@@ -72,7 +72,7 @@ export function Dock({ roomId }: { roomId: string }) {
 		(vote) => vote.votedBy === localStorage.getItem("guestUser"),
 	);
 
-	// add verification, vote only if revealCards is false
+	// TODO: add verification, vote only if revealCards is false
 
 	return (
 		<AnimatePresence>
@@ -102,7 +102,6 @@ export function Dock({ roomId }: { roomId: string }) {
 							{activeTab?.vote === option && (
 								<motion.span
 									layoutId="bubble"
-									// className="absolute inset-0 z-10 bg-white mix-blend-difference"
 									className="absolute inset-0 z-10 bg-primary/30"
 									style={{ borderRadius: 9999 }}
 									transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
@@ -115,8 +114,6 @@ export function Dock({ roomId }: { roomId: string }) {
 		</AnimatePresence>
 	);
 }
-
-/* dock */
 
 function AppIcon({
 	mouseX,

@@ -85,10 +85,6 @@ body {
     cursor: default;
 }
 
-
-/*user select update color*/
-
-
 kbd {
     font-feature-settings: "cv08";
     font-family: Inter;

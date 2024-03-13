@@ -37,12 +37,10 @@ export const RevealCards = ({ roomId }: { roomId: string }) => {
 		}
 
 		votingHistory.set(roomId, [
-			// @ts-expect-error mismatch of types, readonly needs fixing
 			...(state?.votingHistory[roomId] ?? []),
 			{
 				id: snap.room[roomId].currentVotingIssue?.id,
-				// @ts-expect-error mismatch of types, readonly needs fixing
-				votes: snap.room[roomId].votes,
+				votes: [...snap.room[roomId].votes],
 				issueName: snap.room[roomId].currentVotingIssue?.title,
 				agreement: storyPoints,
 			},

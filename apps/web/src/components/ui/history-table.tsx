@@ -18,7 +18,7 @@ import { ydoc } from "@/yjsDoc.ts";
 import { useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
 
-// prepare data to be exported, join the votes into a string
+/* prepare data to be exported, join the votes into a string */
 const prepareData = (data: VotingHistory[]) => {
 	return data.map((line) => {
 		return {

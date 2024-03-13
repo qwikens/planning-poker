@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-// Helper function to convert an array of objects to CSV string
+/* Helper function to convert an array of objects to CSV string */
 const convertToCsv = (data: Record<string, unknown>[]) => {
 	if (!data || !data.length) {
 		return "";
@@ -18,7 +18,7 @@ const convertToCsv = (data: Record<string, unknown>[]) => {
 	return [headers, ...rows].join("\r\n");
 };
 
-// Custom hook
+/* Hook to export data to CSV */
 const useExportToCsv = (filename = "export.csv") => {
 	const exportToCsv = useCallback(
 		(data: Record<string, unknown>[]) => {
