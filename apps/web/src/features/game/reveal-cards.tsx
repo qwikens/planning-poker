@@ -24,11 +24,6 @@ export const RevealCards = ({ roomId }: { roomId: string }) => {
         .filter((vote) => typeof vote.vote === "number")
         .map((vote) => Number(vote.vote));
       const averageStoryPoints = mean(numericVotes);
-      // TODO: calculate correctly
-      const agreement = numericVotes.reduce(
-        (acc, vote) => acc + Math.abs(vote - averageStoryPoints),
-        0,
-      );
 
       const updated = {
         ...currentIssues[index],
@@ -47,7 +42,7 @@ export const RevealCards = ({ roomId }: { roomId: string }) => {
           id: snap.room[roomId].currentVotingIssue?.id,
           votes: [...snap.room[roomId].votes],
           issueName: snap.room[roomId].currentVotingIssue?.title,
-          agreement,
+          agreement: averageStoryPoints,
         },
       ]);
     }
