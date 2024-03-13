@@ -7,9 +7,9 @@ import "./global.css";
 import { router } from "./router";
 
 createRoot(document.getElementById("root") ?? document.body).render(
-	<React.StrictMode>
-		<ThemeProvider defaultTheme={"dark"}>
-			<RouterProvider router={router} />
-		</ThemeProvider>
-	</React.StrictMode>,
+  <React.StrictMode>
+    <ThemeProvider defaultTheme={"dark"}>
+      <RouterProvider router={router} />
+    </ThemeProvider>
+  </React.StrictMode>,
 );
