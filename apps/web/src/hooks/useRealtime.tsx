@@ -47,6 +47,7 @@ export type RoomState = {
   counterStartedAt?: number;
   counterEndsAt?: number;
   currentCount?: number;
+  createdBy: string;
 };
 
 type RealtimeContextType = {
