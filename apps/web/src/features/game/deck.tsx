@@ -78,9 +78,9 @@ export function Deck({ roomId }: { roomId: string }) {
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ y: snap.room[roomId]?.revealCards ? 100 : 0 }}
+        initial={{ y: snap.room[roomId]?.revealCards ? 110 : 0 }}
         animate={{
-          y: snap.room[roomId]?.revealCards ? 100 : 0,
+          y: snap.room[roomId]?.revealCards ? 110 : 0,
         }}
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}

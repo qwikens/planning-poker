@@ -88,6 +88,7 @@ const Game: FC<{ roomId: string }> = ({ roomId }) => {
             <div className="absolute transform -translate-x-1/2 bottom-6 left-1/2">
               <Deck roomId={roomId} />
             </div>
+
             <motion.div
               className="absolute flex gap-2 right-3 top-6"
               initial={{ y: snapRoom.room[roomId]?.revealCards ? -100 : 0 }}
