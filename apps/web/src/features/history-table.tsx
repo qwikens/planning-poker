@@ -89,6 +89,7 @@ const DataTable = ({ id }: { id: string }) => {
               )}{" "}
               points
             </TableCell>
+            <TableCell />
           </TableRow>
         </TableFooter>
       </Table>
@@ -110,7 +111,7 @@ const HistoryTable: FC<{ roomId: string }> = ({ roomId }) => {
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <nav className="flex items-center justify-between gap-4 px-4 py-2 border-b bg-background border-border h-[56px]">
-        <HeaderLeft id={roomId} />
+        <HeaderLeft id={roomId} isAuthenticated />
       </nav>
       <div
         className={

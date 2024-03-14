@@ -1,5 +1,4 @@
 import { CopyToClipboard } from "@/components/copy-to-clipboard";
-import { GameSettingsModal } from "@/components/ui/modal";
 import { Toaster } from "@/components/ui/toaster";
 import { Issues } from "@/features/game/Issues";
 import { CreateUserForm } from "@/features/game/create-user-form";
@@ -18,7 +17,6 @@ import { FC } from "react";
 import { useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
 import { HeaderLeft } from "../../components/header-left";
-
 const Game: FC<{ roomId: string }> = ({ roomId }) => {
   const snapRoom = useSnapshot(state);
   const { room } = useDocuments();
@@ -46,7 +44,7 @@ const Game: FC<{ roomId: string }> = ({ roomId }) => {
     return (
       <div>
         <nav className="flex items-center justify-between gap-4 px-4 py-2 border-b bg-background border-border h-[56px]">
-          <HeaderLeft id={roomId} />
+          <HeaderLeft id={roomId} isAuthenticated={false} />
         </nav>
 
         <CreateUserForm roomId={roomId} />
@@ -71,10 +69,9 @@ const Game: FC<{ roomId: string }> = ({ roomId }) => {
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <nav className="flex items-center justify-between gap-4 px-4 py-2 border-b bg-background border-border h-[56px]">
-        <HeaderLeft id={roomId} />
+        <HeaderLeft id={roomId} isAuthenticated />
 
         <div className="flex items-center gap-2">
-          <GameSettingsModal />
           <CopyToClipboard url={url} />
           <Issues />
         </div>

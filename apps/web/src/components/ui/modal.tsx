@@ -10,34 +10,29 @@ import { state } from "@/store";
 
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PokerPlanningSelect } from "@/components/ui/poker-planning-dropdown.tsx";
 import {
-  Drawer,
   DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "./drawer";
 
-export function GameSettingsModal() {
-  const [open, setOpen] = React.useState(false);
+export function GameSettingsModal({
+  closeModal,
+}: {
+  closeModal: VoidFunction;
+}) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
-
-  const closeModal = () => {
-    setOpen(false);
-  };
 
   const { title, description } = {
     title: "Game settings",
@@ -46,75 +41,34 @@ export function GameSettingsModal() {
 
   if (isDesktop) {
     return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button variant="ghost" size={"icon"}>
-            <span className="sr-only">{title}</span>
-            <svg
-              width={16}
-              height={16}
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <title>Settings</title>
-
-              <path
-                d="M3 9.11v5.77C3 17 3 17 5 18.35l5.5 3.18c.83.48 2.18.48 3 0l5.5-3.18c2-1.35 2-1.35 2-3.46V9.11C21 7 21 7 19 5.65l-5.5-3.18c-.82-.48-2.17-.48-3 0L5 5.65C3 7 3 7 3 9.11z"
-                stroke="currentColor"
-              />
-              <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" />
-            </svg>
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>{description}</DialogDescription>
-          </DialogHeader>
-          <ProfileForm closeModal={closeModal} />
-        </DialogContent>
-      </Dialog>
+      <DialogContent
+        className="sm:max-w-[425px]"
+        onCloseAutoFocus={() => {
+          document.getElementById("game-settings")?.focus();
+        }}
+      >
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        <ProfileForm closeModal={closeModal} />
+      </DialogContent>
     );
   }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>
-        <Button variant="ghost" size={"icon"}>
-          <span className="sr-only">{title}</span>
-
-          <svg
-            aria-label="Open game settings"
-            width={16}
-            height={16}
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <title>Settings</title>
-
-            <path
-              d="M3 9.11v5.77C3 17 3 17 5 18.35l5.5 3.18c.83.48 2.18.48 3 0l5.5-3.18c2-1.35 2-1.35 2-3.46V9.11C21 7 21 7 19 5.65l-5.5-3.18c-.82-.48-2.17-.48-3 0L5 5.65C3 7 3 7 3 9.11z"
-              stroke="currentColor"
-            />
-            <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" />
-          </svg>
-        </Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader className="text-left">
-          <DrawerTitle>{title}</DrawerTitle>
-          <DrawerDescription>{description}</DrawerDescription>
-        </DrawerHeader>
-        <ProfileForm className="px-4" closeModal={closeModal} />
-        <DrawerFooter className="pt-2">
-          <DrawerClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+    <DrawerContent>
+      <DrawerHeader className="text-left">
+        <DrawerTitle>{title}</DrawerTitle>
+        <DrawerDescription>{description}</DrawerDescription>
+      </DrawerHeader>
+      <ProfileForm className="px-4" closeModal={closeModal} />
+      <DrawerFooter className="pt-2">
+        <DrawerClose asChild>
+          <Button variant="outline">Cancel</Button>
+        </DrawerClose>
+      </DrawerFooter>
+    </DrawerContent>
   );
 }
 

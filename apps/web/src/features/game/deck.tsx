@@ -30,8 +30,6 @@ export function Deck({ roomId }: { roomId: string }) {
     ["6", () => onVote(13)],
     ["7", () => onVote(21)],
     ["8", () => onVote(34)],
-    ["9", () => onVote("☕")],
-    ["0", () => onVote("?")],
   ]);
 
   if (isMobile) {
