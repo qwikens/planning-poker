@@ -300,7 +300,7 @@ const IssueList = () => {
                   },
                 ],
               ])}
-              onClick={(e) => {
+              onClick={() => {
                 setDeleteOpen(false);
                 onDeleteAll();
               }}

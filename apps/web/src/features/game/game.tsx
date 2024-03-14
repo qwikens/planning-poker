@@ -1,5 +1,4 @@
 import { CopyToClipboard } from "@/components/copy-to-clipboard";
-import { GameSettingsModal } from "@/components/ui/modal";
 import { Toaster } from "@/components/ui/toaster";
 import { Issues } from "@/features/game/Issues";
 import { CreateUserForm } from "@/features/game/create-user-form";
@@ -7,7 +6,6 @@ import { Deck } from "@/features/game/deck";
 import { RevealCards } from "@/features/game/reveal-cards";
 import { VoteNext } from "@/features/game/vote-next.tsx";
 import { VotingResult } from "@/features/game/voting-result.tsx";
-import { useTheme } from "@/hooks/theme-provider";
 import { HocusPocusProvider } from "@/hooks/useHocuspocus.tsx";
 import { RealtimeProvider, useDocuments } from "@/hooks/useRealtime.tsx";
 import { getGuestName, getSession } from "@/lib/session";
