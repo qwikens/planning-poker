@@ -17,7 +17,7 @@ import { useDocumentTitle } from "@mantine/hooks";
 import { motion } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { FC } from "react";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
 import { HeaderLeft } from "../../components/header-left";
 const Game: FC<{ roomId: string }> = ({ roomId }) => {
@@ -37,6 +37,12 @@ const Game: FC<{ roomId: string }> = ({ roomId }) => {
   if (!ydoc.getMap(`ui-state${roomId}`).get(roomId) || !snapRoom.room[roomId]) {
     // needs sync
     return <div />;
+  }
+
+  const isRoomFull = snapRoom.room[roomId]?.participants?.length >= 6;
+
+  if (isRoomFull) {
+    <Navigate to="/" />;
   }
 
   const isInParticipants = snapRoom.room[roomId]?.participants?.some(
