@@ -1,3 +1,4 @@
+import { ButtonRotateBorder } from "@/components/ui/button-rotate-border";
 import { toast } from "@/components/ui/use-toast.ts";
 import { useDocuments } from "@/hooks/useRealtime.tsx";
 import { state } from "@/store.ts";
@@ -45,5 +46,7 @@ export const VoteNext = ({ roomId }: { roomId: string }) => {
 
   useHotkeys([["n", onVoteNext]]);
 
-  return null;
+  return (
+    <ButtonRotateBorder onClick={onVoteNext}>Vote next</ButtonRotateBorder>
+  );
 };
