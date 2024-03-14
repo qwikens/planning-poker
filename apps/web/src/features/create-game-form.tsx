@@ -50,7 +50,7 @@ const CreateGameForm = () => {
       const game = {
         id: roomId,
         createdAt: Date.now(),
-        createdBy: data.userName,
+        createdBy: user.id,
         name: data.gameName.length > 0 ? data.gameName : "Planning Poker Game",
         votingSystem: data.votingSystem,
         participants: [user],

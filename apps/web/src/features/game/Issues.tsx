@@ -39,6 +39,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useToast } from "@/components/ui/use-toast";
 import useVimNavigation from "@/hooks/useVimNavigation";
 import { getSession } from "@/lib/session";
 import { cn } from "@/lib/utils.ts";
@@ -171,6 +172,7 @@ const IssueList = () => {
   const snap = useSnapshot(state);
   const id = useParams().id;
   const { room, issues } = useDocuments();
+  const { toast } = useToast();
 
   if (!id) {
     return <div>Room id is required</div>;
@@ -196,26 +198,39 @@ const IssueList = () => {
   const documentIssues = issues.get(id) ?? [];
 
   const onDelete = (issueId: string) => {
+    const deletingIssue = documentIssues.find((issue) => issue.id === issueId);
+    if (!deletingIssue) return;
+
+    if (issueId === roomState.currentVotingIssue?.id) {
+      toast({
+        title: "Can't delete an issue that is currently being voted on",
+      });
+      return;
+    }
+
+    if (deletingIssue.createdBy !== getSession()) {
+      toast({
+        title: "Can't delete an issue you didn't create",
+      });
+      return;
+    }
+
     const updatedIssues = documentIssues.filter(
       (issue) => issue.id !== issueId,
     );
-
-    if (
-      roomState.currentVotingIssue &&
-      roomState.currentVotingIssue.id === issueId
-    ) {
-      room.set(id, {
-        ...state.room[id],
-        revealCards: false,
-        votes: [],
-        currentVotingIssue: undefined,
-      });
-    }
 
     issues.set(id, updatedIssues);
   };
 
   const onDeleteAll = () => {
+    if (roomState.createdBy !== getSession()) {
+      toast({
+        title:
+          "Can't delete all issues, only the creator of the room can do that",
+      });
+      return;
+    }
+
     room.set(id, {
       ...state.room[id],
       revealCards: false,
@@ -258,6 +273,13 @@ const IssueList = () => {
               roomState={roomState as RoomState}
               issue={issue}
               onClick={() => {
+                if (roomState.votes.length > 0 && !roomState.revealCards) {
+                  toast({
+                    title: "Can't change issue, reveal the cards first",
+                  });
+                  return;
+                }
+
                 setActiveIssue(issue);
               }}
             />
