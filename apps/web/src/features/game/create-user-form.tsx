@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
+import { Toaster } from "@/components/ui/toaster";
+import { toast } from "@/components/ui/use-toast";
 import { useDocuments } from "@/hooks/useRealtime.tsx";
 import {
   createSession,
@@ -21,6 +23,11 @@ export const CreateUserForm = ({ roomId }: { roomId: string }) => {
 
   const onCreateUser = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (state.room[roomId]?.participants?.length >= 6) {
+      toast({
+        title: "Room is full",
+      });
+    }
 
     const formData = new FormData(event.currentTarget);
     const userName = formData.get("userName");
@@ -60,6 +67,7 @@ export const CreateUserForm = ({ roomId }: { roomId: string }) => {
         />
         <Button type="submit">Join</Button>
       </div>
+      <Toaster />
     </form>
   );
 };
