@@ -1,12 +1,18 @@
 import CardFlip from "@/components/ui/cardflip.tsx";
 import { state } from "@/store.ts";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import mean from "lodash.mean";
 import { useSnapshot } from "valtio";
 
 export const VotingResult = ({ id }: { id: string }) => {
   const snap = useSnapshot(state);
 
   const roomState = snap.room[id];
+
+  const numericVotes = roomState.votes
+    .filter((vote) => typeof vote.vote === "number")
+    .map((vote) => Number(vote.vote));
+  const averageStoryPoints = mean(numericVotes);
 
   const groupedVotes: Record<number | string, number> =
     roomState?.votes?.reduce<Record<number | string, number>>((acc, vote) => {
@@ -66,12 +72,36 @@ export const VotingResult = ({ id }: { id: string }) => {
       </div>
 
       {roomState?.revealCards && (
-        <div className="flex flex-col gap-2">
-          {Object.entries(groupedVotes).map(([vote, count]) => (
-            <p key={vote}>
-              Vote: {vote}, Count: {count}
-            </p>
-          ))}
+        <div className="absolute flex gap-6 transform -translate-x-1/2 bottom-6 left-1/2">
+          {Object.entries(groupedVotes).map(([vote, count]) => {
+            const percentage = (count / Object.keys(groupedVotes).length) * 100;
+
+            return (
+              <div key={vote} className="flex flex-col items-center gap-2">
+                <div className="flex items-end w-3 h-20 rounded-lg bg-secondary">
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: `${percentage}%` }}
+                    className="w-3 h-20 rounded-lg bg-primary max-h-[80px]"
+                    transition={{ duration: 0.5 }}
+                  >
+                    <span className="sr-only">Meter</span>
+                  </motion.div>
+                </div>
+                <div className="px-4 border border-border rounded-sm py-4 text-[18px] font-bold text-primary">
+                  {vote}
+                </div>
+                <span>
+                  {count} {count === 1 ? "vote" : "votes"}
+                </span>
+              </div>
+            );
+          })}
+
+          <div className="flex flex-col items-center gap-2">
+            <p>Average:</p>
+            <span>{averageStoryPoints}</span>
+          </div>
         </div>
       )}
     </div>
