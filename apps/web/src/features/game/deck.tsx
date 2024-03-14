@@ -84,7 +84,7 @@ export function Deck({ roomId }: { roomId: string }) {
         }}
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
-        className="flex items-end h-16 gap-4 px-4 pb-3 mx-auto border rounded-2xl border-border bg-secondary"
+        className="flex items-end h-16 gap-4 px-4 pb-3 mx-auto border rounded-2xl border-border bg-secondary/20"
       >
         {options.map((option) => {
           return (
@@ -98,16 +98,15 @@ export function Deck({ roomId }: { roomId: string }) {
                 "border-primary/90": activeTab?.vote === option,
               })}
             >
-              {option}
-
               {activeTab?.vote === option && (
                 <motion.span
                   layoutId="bubble"
-                  className="absolute inset-0 z-10 bg-primary/30"
+                  className="absolute inset-0 bg-primary/30 "
                   style={{ borderRadius: 9999 }}
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
+              <span>{option}</span>
             </AppIcon>
           );
         })}
@@ -155,7 +154,7 @@ function AppIcon({
       whileTap={{ scale: 0.95 }}
       style={{ width, height: width, willChange: "width scale" }}
       className={cn(
-        "w-10 bg-secondary border-primary/50 border rounded-full aspect-square transition-background",
+        "w-10 border-primary/30 backdrop-blur-md	 focus-visible:outline-none focus-visible:ring-offset-2 ring-offset-background focus-visible:ring-2 focus-visible:ring-ring/50  border rounded-full aspect-square transition-background",
         className,
       )}
     >
