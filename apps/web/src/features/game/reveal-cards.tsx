@@ -1,3 +1,4 @@
+import { ButtonRotateBorder } from "@/components/ui/button-rotate-border";
 import { useDocuments } from "@/hooks/useRealtime.tsx";
 import { update } from "@/lib/update.ts";
 import { state } from "@/store.ts";
@@ -55,5 +56,9 @@ export const RevealCards = ({ roomId }: { roomId: string }) => {
 
   useHotkeys([["r", onRevealCards]]);
 
-  return null;
+  return (
+    <ButtonRotateBorder onClick={onRevealCards}>
+      Reveal cards
+    </ButtonRotateBorder>
+  );
 };

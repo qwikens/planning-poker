@@ -14,6 +14,7 @@ import { getGuestName, getSession } from "@/lib/session";
 import { state } from "@/store.ts";
 import { ydoc } from "@/yjsDoc.ts";
 import { useDocumentTitle } from "@mantine/hooks";
+import { motion } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
 import { FC } from "react";
 import { useParams } from "react-router-dom";
@@ -83,11 +84,29 @@ const Game: FC<{ roomId: string }> = ({ roomId }) => {
         <div className={"min-h-full flex-1"}>
           <div className="relative flex flex-col h-full gap-2 p-4 mx-4 mb-4 overflow-hidden rounded-lg border-border">
             <VotingResult id={roomId} />
-            <VoteNext roomId={roomId} />
-            <RevealCards roomId={roomId} />
+
             <div className="absolute transform -translate-x-1/2 bottom-6 left-1/2">
               <Deck roomId={roomId} />
             </div>
+            <motion.div
+              className="absolute flex gap-2 right-3 top-6"
+              initial={{ y: snapRoom.room[roomId]?.revealCards ? -100 : 0 }}
+              animate={{
+                y: snapRoom.room[roomId]?.revealCards ? -100 : 0,
+              }}
+            >
+              <RevealCards roomId={roomId} />
+            </motion.div>
+
+            <motion.div
+              className="absolute flex gap-2 right-3 top-6"
+              initial={{ y: snapRoom.room[roomId]?.revealCards ? 0 : -100 }}
+              animate={{
+                y: snapRoom.room[roomId]?.revealCards ? 0 : -100,
+              }}
+            >
+              <VoteNext roomId={roomId} />
+            </motion.div>
           </div>
         </div>
 

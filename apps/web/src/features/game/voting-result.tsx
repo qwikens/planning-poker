@@ -40,7 +40,7 @@ export const VotingResult = ({ id }: { id: string }) => {
                   <motion.div
                     layoutId={participant.id}
                     key={participant.id}
-                    className="flex flex-col items-center gap-2"
+                    className="flex flex-col items-center gap-2 will-change-transform"
                     exit={{ opacity: 0, scale: 0.5 }}
                     initial={{ opacity: 0, scale: 0.5 }}
                     animate={{ opacity: 1, scale: 1 }}
