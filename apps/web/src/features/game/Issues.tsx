@@ -81,7 +81,6 @@ const CreateIssueForm = () => {
             storyPoints: 0,
             createdAt: Date.now(),
             createdBy: userId,
-            link: "https://qwikens.com",
             title: data.title,
           },
         ]);
@@ -156,11 +155,8 @@ function IssueCard(props: {
       <div />
 
       <div className="flex items-center justify-between gap-2 mt-2">
-        <div>
-          <p className={"text-sm text-foreground/40"}>{props.issue.id}</p>
-        </div>
-        <span className="flex text-sm items-center gap-2">
-          {props.issue.storyPoints}
+        <span className="flex items-center gap-2 text-sm">
+          {props.issue.storyPoints || "-"}
         </span>
       </div>
     </motion.div>
@@ -304,7 +300,7 @@ const IssueList = () => {
                   },
                 ],
               ])}
-              onClick={() => {
+              onClick={(e) => {
                 setDeleteOpen(false);
                 onDeleteAll();
               }}

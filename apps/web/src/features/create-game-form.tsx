@@ -1,3 +1,4 @@
+import { HeaderLeft } from "@/components/header-left";
 import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { PokerPlanningSelect } from "@/components/ui/poker-planning-dropdown.tsx";
@@ -73,7 +74,9 @@ const CreateGameForm = () => {
 
   return (
     <div>
-      <nav className="flex items-center justify-between gap-4 px-4 py-2 border-b bg-background border-border h-[56px]" />
+      <nav className="flex items-center justify-between gap-4 px-4 py-2 border-b bg-background border-border h-[56px]">
+        <HeaderLeft isAuthenticated={false} />
+      </nav>
       <form
         onSubmit={onCreateGame}
         className="max-w-[430px] w-full mx-auto px-4 py-2 mt-20"

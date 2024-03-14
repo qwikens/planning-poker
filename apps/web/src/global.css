@@ -4,6 +4,8 @@
 
 * {
     box-sizing: border-box;
+    cursor: default !important;
+
 }
 
 :root {
@@ -91,22 +93,3 @@ kbd {
 }
 
 
-.qr-code path:nth-child(1) {
-    fill: transparent;
-}
-
-.qr-code path:nth-child(2) {
-    fill: hsl(var(--primary));
-    opacity: 0.3;
-}
-
-.qr-code:hover path:nth-child(2) {
-    fill: hsl(var(--primary));
-    opacity: 1;
-
-}
-
-
-* {
-    cursor: default !important;
-}

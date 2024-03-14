@@ -7,6 +7,7 @@ import { Deck } from "@/features/game/deck";
 import { RevealCards } from "@/features/game/reveal-cards";
 import { VoteNext } from "@/features/game/vote-next.tsx";
 import { VotingResult } from "@/features/game/voting-result.tsx";
+import { useTheme } from "@/hooks/theme-provider";
 import { HocusPocusProvider } from "@/hooks/useHocuspocus.tsx";
 import { RealtimeProvider, useDocuments } from "@/hooks/useRealtime.tsx";
 import { getGuestName, getSession } from "@/lib/session";
@@ -18,7 +19,6 @@ import { FC } from "react";
 import { useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
 import { HeaderLeft } from "../../components/header-left";
-
 const Game: FC<{ roomId: string }> = ({ roomId }) => {
   const snapRoom = useSnapshot(state);
   const { room } = useDocuments();
@@ -46,7 +46,7 @@ const Game: FC<{ roomId: string }> = ({ roomId }) => {
     return (
       <div>
         <nav className="flex items-center justify-between gap-4 px-4 py-2 border-b bg-background border-border h-[56px]">
-          <HeaderLeft id={roomId} />
+          <HeaderLeft id={roomId} isAuthenticated={false} />
         </nav>
 
         <CreateUserForm roomId={roomId} />
@@ -71,10 +71,9 @@ const Game: FC<{ roomId: string }> = ({ roomId }) => {
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <nav className="flex items-center justify-between gap-4 px-4 py-2 border-b bg-background border-border h-[56px]">
-        <HeaderLeft id={roomId} />
+        <HeaderLeft id={roomId} isAuthenticated />
 
         <div className="flex items-center gap-2">
-          <GameSettingsModal />
           <CopyToClipboard url={url} />
           <Issues />
         </div>

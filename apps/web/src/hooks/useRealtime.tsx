@@ -15,7 +15,6 @@ export type Issue = {
   storyPoints?: number;
   createdAt: number;
   createdBy: string;
-  link?: string;
   title: string;
 };
 

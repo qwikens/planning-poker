@@ -177,7 +177,9 @@ export function IssueDropdownMenu({
           <AlertDialogAction
             data-testid="delete-issue"
             onKeyDown={getHotkeyHandler([["Enter", onDelete]])}
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               onDelete();
             }}
           >

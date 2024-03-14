@@ -10,7 +10,7 @@ export const Component = () => {
   return (
     <div>
       <nav className="flex items-center justify-between gap-4 px-4 py-2 border-b bg-background border-border h-[56px]">
-        <HeaderLeft />
+        <HeaderLeft isAuthenticated={false} />
       </nav>
 
       <div className="flex flex-col max-w-[430px] w-full mt-10 gap-4 px-4 mx-auto">

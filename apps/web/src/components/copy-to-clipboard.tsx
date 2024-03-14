@@ -56,43 +56,29 @@ function CopySVG() {
 }
 
 export const CopyToClipboard = ({ url }: { url: string }) => {
-  const { copy, copied } = useClipboard();
+  const { copy } = useClipboard();
   const { toast, toasts } = useToast();
 
   return (
-    <TooltipProvider>
-      <Tooltip delayDuration={400}>
-        <TooltipTrigger asChild>
-          <Button
-            variant={"ghost"}
-            size={"icon"}
-            onClick={() => {
-              copy(url);
+    <Button
+      variant={"default"}
+      onClick={() => {
+        copy(url);
 
-              if (
-                toasts.some(
-                  (toast) =>
-                    toast.title === "Game URL copied to clipboard" &&
-                    toast.open,
-                )
-              )
-                return;
+        if (
+          toasts.some(
+            (toast) =>
+              toast.title === "Game URL copied to clipboard" && toast.open,
+          )
+        )
+          return;
 
-              toast({
-                title: "Game URL copied to clipboard",
-              });
-            }}
-          >
-            <span className="sr-only">
-              {copied ? "Copied to clipboard" : "Copy to clipboard"}
-            </span>
-            {copied ? <CopiedSVG /> : <CopySVG />}
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent sideOffset={10}>
-          <p>Copy game link</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+        toast({
+          title: "Game URL copied to clipboard",
+        });
+      }}
+    >
+      Invite players
+    </Button>
   );
 };

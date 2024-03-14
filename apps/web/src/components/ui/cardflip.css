@@ -4,7 +4,7 @@
 }
 
 :root {
-  --darkBg: #ffcc33;
+  --darkBg: hsl(var(--primary));
   --lightBg: #fff3ce;
   --darkRed: #e22929;
   --lightRed: #ffd0d0;
@@ -21,8 +21,8 @@
 }
 .card {
   display: block;
-  width: 150px;
-  height: 200px;
+  width: 75px;
+  height: 100px;
   position: relative;
   font-family: 'Syne Mono', monospace;
 }
@@ -34,12 +34,12 @@
   width: 100%;
   height: 100%;
 
-  border-radius: 12px;
+  border-radius: 8px;
   backface-visibility: hidden;
   transition: all 0.5s;
 }
 .back {
-  border: 6px solid #fff;
+  border: 3px solid #fff;
   background: conic-gradient(
     var(--darkBg) 25%, 
     var(--lightBg) 25%, 
@@ -47,12 +47,12 @@
     var(--darkBg) 50%, 
     var(--darkBg) 75%, 
     var(--lightBg) 75%);
-  background-size: 20px 20px;
+  background-size: 15px 15px;
   transform: rotateY(-180deg);
 }
 .front {
   background-color: #fff;
-  font-size: 24px;
+  font-size: 16px;
 }
 input[type=checkbox] {
   display: none;
@@ -91,15 +91,15 @@ input[type=checkbox]:checked ~ .back {
 .num-box {
   text-align: center;
   position: absolute;
-  width: 20px;
+  width: 14px;
 }
 .num-box.top {
-  top: 10px;
-  left: 10px;
+  top: 5px;
+  left: 5px;
 }
 .num-box.bottom {
-  bottom: 10px;
-  right: 10px;
+  bottom: 5px;
+  right: 5px;
   transform: rotate(180deg);
 }
 .num-box.suit:after {
@@ -112,7 +112,7 @@ input[type=checkbox]:checked ~ .back {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 5em;
+  font-size: 2em;
   -webkit-background-clip: text;
 }
 
