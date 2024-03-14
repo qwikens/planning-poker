@@ -1,4 +1,6 @@
 import { CopyToClipboard } from "@/components/copy-to-clipboard";
+import { Button } from "@/components/ui/button";
+import { ShortcutsInfo } from "@/components/ui/shortcuts-info";
 import { Toaster } from "@/components/ui/toaster";
 import { Issues } from "@/features/game/Issues";
 import { CreateUserForm } from "@/features/game/create-user-form";
@@ -88,6 +90,15 @@ const Game: FC<{ roomId: string }> = ({ roomId }) => {
             </div>
           </div>
         </div>
+
+        <ShortcutsInfo>
+          <Button
+            variant={"outline"}
+            className="absolute rounded-full left-4 bottom-6"
+          >
+            <span className="sr-only">Questions</span>?
+          </Button>
+        </ShortcutsInfo>
 
         <div className="hidden flex-col items-center gap-4 xl:flex flex-auto max-w-[372px] w-full duration-150 ease-in-out mt-20 min-w-[350px]">
           <QRCodeSVG
