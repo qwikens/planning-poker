@@ -11,10 +11,10 @@ import { clearSession } from "@/lib/session";
 import { useMediaQuery } from "@mantine/hooks";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
+import { GameSettingsModal } from "../features/game/game-settings-modal";
 import { Button } from "./ui/button";
 import { Dialog, DialogTrigger } from "./ui/dialog";
 import { Drawer, DrawerTrigger } from "./ui/drawer";
-import { GameSettingsModal } from "./ui/modal";
 
 export function PreferencesDropdownMenu({
   children,

@@ -30,6 +30,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog.tsx";
 import { IssueDropdownMenu } from "@/components/ui/dropdown.tsx";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Kbd } from "@/components/ui/kbd.tsx";
 import {
@@ -43,11 +50,14 @@ import { useToast } from "@/components/ui/use-toast";
 import useVimNavigation from "@/hooks/useVimNavigation";
 import { getSession } from "@/lib/session";
 import { cn } from "@/lib/utils.ts";
-import * as React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
-const issueSchema = z.object({
-  title: z.string().min(1),
+const createIssueSchema = z.object({
+  title: z.string(),
 });
+type CreateIssueFormInput = z.input<typeof createIssueSchema>;
+type CreateIssueFormValues = z.infer<typeof createIssueSchema>;
 
 const CreateIssueForm = () => {
   const { issues } = useDocuments();
@@ -61,52 +71,65 @@ const CreateIssueForm = () => {
       },
     ],
   ]);
+  const form = useForm<CreateIssueFormInput, unknown, CreateIssueFormValues>({
+    resolver: zodResolver(createIssueSchema),
+    defaultValues: {
+      title: "",
+    },
+  });
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const onCreateIssue = (values: CreateIssueFormValues) => {
     const userId = getSession();
     if (!userId) return;
 
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const title = formData.get("title");
+    const { title } = values;
 
-    try {
-      const data = issueSchema.parse({
-        title,
-      });
-      if (id) {
-        issues.set(id, [
-          ...(issues.get(id) ?? []),
-          {
-            id: Date.now().toString(),
-            storyPoints: 0,
-            createdAt: Date.now(),
-            createdBy: userId,
-            title: data.title,
-          },
-        ]);
-      }
-
-      // reset the form
-      event.currentTarget.reset();
-
-      inputRef.current?.focus();
-    } catch (error) {
-      inputRef.current?.focus();
+    if (!title.length) {
       return;
     }
+
+    if (id) {
+      issues.set(id, [
+        ...(issues.get(id) ?? []),
+        {
+          id: Date.now().toString(),
+          storyPoints: 0,
+          createdAt: Date.now(),
+          createdBy: userId,
+          title,
+        },
+      ]);
+    }
+
+    form.reset({ title: "" });
   };
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-2">
-      <Input
-        type="text"
-        placeholder="Issue title"
-        name="title"
-        data-testid="create-issue-input"
-        ref={inputRef}
-      />
-    </form>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onCreateIssue)}
+        className="flex flex-col gap-2"
+      >
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  type="text"
+                  placeholder="Issue title"
+                  data-testid="create-issue-input"
+                  {...field}
+                  ref={inputRef}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </form>
+    </Form>
   );
 };
 

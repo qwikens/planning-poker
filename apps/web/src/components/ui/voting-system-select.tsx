@@ -5,14 +5,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ControllerRenderProps, FieldValues, Path } from "react-hook-form";
 
-export const PokerPlanningSelect = ({
-  defaultValue,
+export const VotingSystemSelect = <
+  TFields extends FieldValues,
+  TName extends Path<TFields>,
+>({
+  field,
 }: {
-  defaultValue?: string;
-} = {}) => {
+  field: ControllerRenderProps<TFields, TName>;
+}) => {
   return (
-    <Select name="votingSystem" defaultValue={defaultValue ?? "fibonacci"}>
+    <Select {...field}>
       <SelectTrigger>
         <SelectValue placeholder="Voting System" />
       </SelectTrigger>
