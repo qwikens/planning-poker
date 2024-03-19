@@ -15,9 +15,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { PokerPlanningSelect } from "@/components/ui/poker-planning-dropdown.tsx";
+import { VotingSystemSelect } from "@/components/ui/voting-system-select";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import {
   DrawerClose,
   DrawerContent,
@@ -25,7 +33,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from "./drawer";
+} from "../../components/ui/drawer";
 
 export function GameSettingsModal({
   closeModal,
@@ -72,16 +80,12 @@ export function GameSettingsModal({
   );
 }
 
-const updateRoomSchema = z
-  .object({
-    roomName: z.string().default("Planning Poker Game"),
-    votingSystem: z.string(),
-  })
-  .transform((value) => ({
-    ...value,
-    roomName:
-      value.roomName.length > 0 ? value.roomName : "Planning Poker Game",
-  }));
+const updateGameSchema = z.object({
+  gameName: z.string().min(1),
+  votingSystem: z.string(),
+});
+type UpdateGameFormInput = z.input<typeof updateGameSchema>;
+type UpdateGameFormValues = z.infer<typeof updateGameSchema>;
 
 function ProfileForm({
   className,
@@ -92,54 +96,62 @@ function ProfileForm({
   const snap = useSnapshot(state);
   const roomId = useParams().id;
   const { room } = useDocuments();
+  const form = useForm<UpdateGameFormInput, unknown, UpdateGameFormValues>({
+    resolver: zodResolver(updateGameSchema),
+    defaultValues: {
+      gameName: snap.room[roomId ?? ""]?.name,
+      votingSystem: snap.room[roomId ?? ""]?.votingSystem,
+    },
+  });
 
   if (!roomId) {
     return <div>Room id is required</div>;
   }
 
-  const currentRoom = snap.room[roomId];
+  const onUpdateGame = (values: UpdateGameFormValues) => {
+    const { gameName, votingSystem } = values;
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const formData = new FormData(event.currentTarget);
-    const name = formData.get("name");
-    const votingSystem = formData.get("votingSystem");
-
-    try {
-      const data = updateRoomSchema.parse({
-        roomName: name,
-        votingSystem,
-      });
-
-      room.set(roomId, {
-        ...state.room[roomId],
-        name: data.roomName,
-        votingSystem: data.votingSystem,
-      });
-    } catch (error) {
-      return;
-    }
+    room.set(roomId, {
+      ...state.room[roomId],
+      name: gameName,
+      votingSystem,
+    });
 
     closeModal();
   };
+
   return (
-    <form
-      className={cn("grid items-start gap-4", className)}
-      onSubmit={onSubmit}
-    >
-      <div className="grid gap-2">
-        <Label htmlFor="email">Game's name</Label>
-        <Input type="text" name="name" defaultValue={currentRoom.name} />
-      </div>
-
-      <div className="grid gap-2">
-        <Label htmlFor="votingSystem">Voting System</Label>
-
-        <PokerPlanningSelect defaultValue={currentRoom.votingSystem} />
-      </div>
-
-      <Button type="submit">Save changes</Button>
-    </form>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onUpdateGame)}
+        className={cn("grid items-start gap-4", className)}
+      >
+        <FormField
+          control={form.control}
+          name="gameName"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="votingSystem"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <VotingSystemSelect field={field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">Save changes</Button>
+      </form>
+    </Form>
   );
 }
