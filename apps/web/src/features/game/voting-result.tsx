@@ -12,7 +12,7 @@ export const VotingResult = ({ id }: { id: string }) => {
   const numericVotes = roomState.votes
     .filter((vote) => typeof vote.vote === "number")
     .map((vote) => Number(vote.vote));
-  const averageStoryPoints = mean(numericVotes);
+  const averageStoryPoints = Math.round(mean(numericVotes));
 
   const groupedVotes: Record<number | string, number> =
     roomState?.votes?.reduce<Record<number | string, number>>((acc, vote) => {
@@ -99,7 +99,7 @@ export const VotingResult = ({ id }: { id: string }) => {
           })}
 
           <div className="flex flex-col items-center gap-2">
-            <p>Average:</p>
+            <p>Rounded Average:</p>
             <span>{averageStoryPoints}</span>
           </div>
         </div>
