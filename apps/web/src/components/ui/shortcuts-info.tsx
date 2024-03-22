@@ -106,6 +106,11 @@ export function ShortcutsInfo({ children }: { children: React.ReactNode }) {
               </div>
 
               <div className="flex items-center justify-between gap-2">
+                <span className={"text-sm font-semibold"}>Vote again</span>
+                <Kbd>v</Kbd>
+              </div>
+
+              <div className="flex items-center justify-between gap-2">
                 <span className={"text-sm font-semibold"}>Voting option</span>
                 <Kbd>1,2,3,4,5,6,7,8,9,0</Kbd>
               </div>
