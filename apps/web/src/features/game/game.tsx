@@ -6,6 +6,7 @@ import { Issues } from "@/features/game/Issues";
 import { CreateUserForm } from "@/features/game/create-user-form";
 import { Deck } from "@/features/game/deck";
 import { RevealCards } from "@/features/game/reveal-cards";
+import { VoteAgain } from "@/features/game/vote-again.tsx";
 import { VoteNext } from "@/features/game/vote-next.tsx";
 import { VotingResult } from "@/features/game/voting-result.tsx";
 import { HocusPocusProvider } from "@/hooks/useHocuspocus.tsx";
@@ -107,6 +108,16 @@ const Game: FC<{ roomId: string }> = ({ roomId }) => {
               }}
             >
               <VoteNext roomId={roomId} />
+            </motion.div>
+
+            <motion.div
+              className="absolute flex gap-2 right-28 top-6"
+              initial={{ y: snapRoom.room[roomId]?.revealCards ? 0 : -100 }}
+              animate={{
+                y: snapRoom.room[roomId]?.revealCards ? 0 : -100,
+              }}
+            >
+              <VoteAgain roomId={roomId} />
             </motion.div>
           </div>
         </div>
