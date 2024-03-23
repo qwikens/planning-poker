@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 
-export async function joinRoom({
+export const joinRoom = async ({
   page,
   userName,
   gameUrl,
@@ -8,8 +8,8 @@ export async function joinRoom({
   page: Page;
   gameUrl: string;
   userName: string;
-}): Promise<void> {
+}): Promise<void> => {
   await page.goto(gameUrl);
   await page.getByPlaceholder("User Name").fill(userName);
   await page.getByRole("button", { name: "Join" }).click();
-}
+};

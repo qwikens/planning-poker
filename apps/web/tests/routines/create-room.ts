@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 
-export async function createRoom({
+export const createRoom = async ({
   page,
   gameName,
   userName,
@@ -8,7 +8,7 @@ export async function createRoom({
   page: Page;
   gameName: string;
   userName: string;
-}): Promise<void> {
+}): Promise<void> => {
   await page.goto("http://localhost:5173/");
   await page.getByRole("button", { name: "Start new game" }).click();
   await page.getByPlaceholder("Game Name").fill(gameName);
@@ -16,4 +16,4 @@ export async function createRoom({
   await page.getByRole("button", { name: "Create" }).click();
 
   await page.waitForNavigation();
-}
+};
