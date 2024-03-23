@@ -5,6 +5,7 @@ import { Issue, RoomState, VotingHistory } from "./hooks/useRealtime";
 
 type GameState = {
   issues: Record<string, Issue[]>;
+  decryptedIssues: Issue[];
   votingHistory: Record<string, VotingHistory[]>;
   room: Record<string, RoomState>;
   issuesOpen: boolean;
@@ -14,6 +15,7 @@ type GameState = {
 
 export const state = proxy<GameState>({
   issues: {},
+  decryptedIssues: [],
   room: {},
   issuesOpen: true,
   globalSequentialId: 1,

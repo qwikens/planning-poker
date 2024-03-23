@@ -48,6 +48,7 @@ import {
 } from "@/components/ui/sheet";
 import { useToast } from "@/components/ui/use-toast";
 import useVimNavigation from "@/hooks/useVimNavigation";
+import { encryptMessage } from "@/lib/crypto";
 import { getSession } from "@/lib/session";
 import { cn } from "@/lib/utils.ts";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -60,8 +61,9 @@ type CreateIssueFormInput = z.input<typeof createIssueSchema>;
 type CreateIssueFormValues = z.infer<typeof createIssueSchema>;
 
 const CreateIssueForm = () => {
+  const snap = useSnapshot(state);
   const { issues } = useDocuments();
-  const id = useParams().id;
+  const { id: roomId } = useParams();
   const inputRef = useRef<HTMLInputElement>(null);
   useHotkeys([
     [
@@ -84,19 +86,19 @@ const CreateIssueForm = () => {
 
     const { title } = values;
 
-    if (!title.length) {
+    if (!title.length || !roomId || !snap.room[roomId]?.publicKey) {
       return;
     }
 
-    if (id) {
-      issues.set(id, [
-        ...(issues.get(id) ?? []),
+    if (roomId) {
+      issues.set(roomId, [
+        ...(issues.get(roomId) ?? []),
         {
           id: Date.now().toString(),
           storyPoints: 0,
           createdAt: Date.now(),
           createdBy: userId,
-          title,
+          title: encryptMessage(title, snap.room[roomId].publicKey),
         },
       ]);
     }
@@ -212,7 +214,7 @@ const IssueList = () => {
 
   const roomState = snap.room[id];
 
-  const roomIssues = snap.issues[id] ?? [];
+  const roomIssues = snap.decryptedIssues;
 
   const documentIssues = issues.get(id) ?? [];
 

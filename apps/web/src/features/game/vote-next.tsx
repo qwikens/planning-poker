@@ -11,7 +11,7 @@ export const VoteNext = ({ roomId }: { roomId: string }) => {
 
   const onVoteNext = () => {
     const currentIssueId = snap.room[roomId]?.currentVotingIssue?.id;
-    const currentIssues = snap.issues[roomId];
+    const currentIssues = snap.decryptedIssues;
 
     if (
       snap.room[roomId]?.votes.length > 0 &&

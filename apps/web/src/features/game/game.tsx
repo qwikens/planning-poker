@@ -9,8 +9,14 @@ import { RevealCards } from "@/features/game/reveal-cards";
 import { VoteNext } from "@/features/game/vote-next.tsx";
 import { VotingResult } from "@/features/game/voting-result.tsx";
 import { HocusPocusProvider } from "@/hooks/useHocuspocus.tsx";
+import { useQuery } from "@/hooks/useQuery";
 import { RealtimeProvider, useDocuments } from "@/hooks/useRealtime.tsx";
-import { getGuestName, getSession } from "@/lib/session";
+import {
+  getGuestName,
+  getPrivateKey,
+  getSession,
+  savePrivateKey,
+} from "@/lib/session";
 import { state } from "@/store.ts";
 import { ydoc } from "@/yjsDoc.ts";
 import { useDocumentTitle } from "@mantine/hooks";
@@ -67,7 +73,9 @@ const Game: FC<{ roomId: string }> = ({ roomId }) => {
     });
   }
 
-  const url = `${window.location.origin}/${roomId}`;
+  const url = encodeURI(
+    `${window.location.origin}/${roomId}?privateKey=${getPrivateKey()}`,
+  );
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
@@ -132,10 +140,22 @@ const Game: FC<{ roomId: string }> = ({ roomId }) => {
 };
 
 export const Component = () => {
-  const roomId = useParams().id;
+  const { id: roomId } = useParams();
+  const query = useQuery();
 
   if (!roomId) {
     return <div>Room id is required</div>;
+  }
+
+  const privateKey = query.get("privateKey");
+
+  // TODO: add empty state
+  if (!privateKey && !getPrivateKey()) {
+    return <div>Unauthorized</div>;
+  }
+
+  if (privateKey) {
+    savePrivateKey(privateKey);
   }
 
   return (

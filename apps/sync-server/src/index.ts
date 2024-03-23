@@ -34,6 +34,7 @@ type RoomState = {
   counterStartedAt?: number;
   counterEndsAt?: number;
   currentCount?: number;
+  publicKey: string;
 };
 
 export const server = new Hocuspocus({
