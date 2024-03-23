@@ -14,6 +14,4 @@ export const createRoom = async ({
   await page.getByPlaceholder("Game Name").fill(gameName);
   await page.getByPlaceholder("User Name").fill(userName);
   await page.getByRole("button", { name: "Create" }).click();
-
-  await page.waitForNavigation();
 };
