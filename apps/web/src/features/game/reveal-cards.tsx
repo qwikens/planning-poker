@@ -42,7 +42,8 @@ export const RevealCards = ({ roomId }: { roomId: string }) => {
         {
           id: snap.room[roomId].currentVotingIssue?.id,
           votes: [...snap.room[roomId].votes],
-          issueName: snap.room[roomId].currentVotingIssue?.title,
+          issueTitle: snap.room[roomId].currentVotingIssue?.title,
+          issueId: snap.room[roomId].currentVotingIssue?.id,
           agreement: averageStoryPoints,
         },
       ]);

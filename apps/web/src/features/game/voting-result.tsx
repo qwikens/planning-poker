@@ -20,12 +20,14 @@ export const VotingResult = ({ id }: { id: string }) => {
       return acc;
     }, {});
 
+  const decryptedIssueTitle = snap.decryptedIssues.find(
+    (decryptedIssue) => decryptedIssue.id === roomState.currentVotingIssue?.id,
+  )?.title;
+
   return (
     <div className="flex flex-col w-full gap-2 mx-auto max-w-[800px]">
       <h1 className="text-scale-[18px]/[26px] h-20 self-center mt-[80px]">
-        {roomState?.currentVotingIssue?.title ? (
-          <span>{roomState?.currentVotingIssue?.title}</span>
-        ) : null}
+        {decryptedIssueTitle && <span>{decryptedIssueTitle}</span>}
       </h1>
       <div className="flex w-full gap-2">
         <AnimatePresence mode="wait">

@@ -29,7 +29,8 @@ type Vote = {
 export type VotingHistory = {
   id?: string;
   votes: Vote[];
-  issueName?: string;
+  issueTitle?: string;
+  issueId?: string;
   agreement: number; // average of votes
   duration?: number; // start - end time in ms
 };
@@ -102,7 +103,10 @@ export const RealtimeProvider = ({ children }: RealtimeProviderProps) => {
             };
           }
 
-          return foundDecryptedIssue;
+          return {
+            ...encryptedIssue,
+            title: foundDecryptedIssue.title,
+          };
         },
       );
     });

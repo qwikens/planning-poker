@@ -191,32 +191,32 @@ function IssueCard(props: {
 
 const IssueList = () => {
   const snap = useSnapshot(state);
-  const id = useParams().id;
+  const { id: roomId } = useParams();
   const { room, issues } = useDocuments();
   const { toast } = useToast();
 
-  if (!id) {
+  if (!roomId) {
     return <div>Room id is required</div>;
   }
 
-  if (!room.get(id)) {
+  if (!room.get(roomId)) {
     return null;
   }
 
-  const setActiveIssue = (issue: Issue) => {
-    room.set(id, {
-      ...state.room[id],
+  const setActiveIssue = (issue: Issue | undefined) => {
+    room.set(roomId, {
+      ...state.room[roomId],
       revealCards: false,
       votes: [],
       currentVotingIssue: issue,
     });
   };
 
-  const roomState = snap.room[id];
+  const roomState = snap.room[roomId];
 
   const roomIssues = snap.decryptedIssues;
 
-  const documentIssues = issues.get(id) ?? [];
+  const documentIssues = issues.get(roomId) ?? [];
 
   const onDelete = (issueId: string) => {
     const deletingIssue = documentIssues.find((issue) => issue.id === issueId);
@@ -240,7 +240,7 @@ const IssueList = () => {
       (issue) => issue.id !== issueId,
     );
 
-    issues.set(id, updatedIssues);
+    issues.set(roomId, updatedIssues);
   };
 
   const onDeleteAll = () => {
@@ -252,14 +252,14 @@ const IssueList = () => {
       return;
     }
 
-    room.set(id, {
-      ...state.room[id],
+    room.set(roomId, {
+      ...state.room[roomId],
       revealCards: false,
       votes: [],
       currentVotingIssue: undefined,
     });
 
-    issues.set(id, []);
+    issues.set(roomId, []);
 
     const input = document.querySelector(
       "[data-testid=create-issue-input]",
@@ -301,7 +301,11 @@ const IssueList = () => {
                   return;
                 }
 
-                setActiveIssue(issue);
+                setActiveIssue(
+                  snap.issues[roomId].find(
+                    (encryptedIssue) => encryptedIssue.id === issue.id,
+                  ),
+                );
               }}
             />
           ))}
