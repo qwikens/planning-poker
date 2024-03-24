@@ -48,6 +48,9 @@ jobs:
 
       - name: Run tests
         run: pnpm ${{ env.PNPM_SCRIPT_PREFIX }} test
+
+      - name: Run e2e tests
+        run: pnpm ${{ env.PNPM_SCRIPT_PREFIX }} test:e2e
   deploy:
     name: Deploy
     runs-on: ubuntu-latest

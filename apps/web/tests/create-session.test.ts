@@ -36,7 +36,6 @@ test("session creation", async ({ browser }) => {
   await ensureIssueActive({ page: adminPage, issueName: issueName });
   const inviteLink = await copyInviteLink(adminPage);
 
-  // open new playwright session
   const secondPlayerPage = await browser.newPage();
   await joinRoom({
     page: secondPlayerPage,

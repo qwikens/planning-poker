@@ -65,7 +65,6 @@ test("all issue deletion", async ({ browser }) => {
     userName: player1Name,
   });
 
-  // create 4 issues using a loop
   for (let i = 0; i < 4; i++) {
     const issueName = chance.sentence({ words: 3 });
     await createIssue({ page: adminPage, issueName: issueName });

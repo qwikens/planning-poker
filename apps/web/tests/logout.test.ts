@@ -26,7 +26,6 @@ test("logout", async ({ browser }) => {
 
   const inviteLink = await copyInviteLink(adminPage);
 
-  // open new playwright session
   const secondPlayerPage = await browser.newPage();
   await joinRoom({
     page: secondPlayerPage,

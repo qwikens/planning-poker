@@ -1,8 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { Chance } from "chance";
-import { createIssue } from "./routines/create-issue";
 import { createRoom } from "./routines/create-room";
-import { ensureIssueActive } from "./routines/ensure-issue-active";
 
 const chance = new Chance();
 
