@@ -27,13 +27,13 @@ test("issue deletion", async ({ browser }) => {
 
   await adminPage.getByLabel(`More actions for issue ${issueName}`).click();
   await adminPage.getByRole("menuitem", { name: "Delete" }).click();
-  expect(
+  await expect(
     adminPage.getByRole("heading", { name: "You are deleting the issue:" }),
   ).toBeVisible();
   await adminPage.getByTestId("delete-issue").click();
 
   await expect(adminPage.getByTestId(`issue-${issueName}`)).toBeHidden();
-  expect(adminPage.getByTestId("create-issue-input")).toBeFocused();
+  await expect(adminPage.getByTestId("create-issue-input")).toBeFocused();
 
   await createIssue({ page: adminPage, issueName: issueName });
   await expect(adminPage.getByTestId(`issue-${issueName}`)).toBeVisible();
@@ -42,7 +42,7 @@ test("issue deletion", async ({ browser }) => {
   await adminPage.keyboard.down("Meta");
   await adminPage.keyboard.press("Backspace");
 
-  expect(
+  await expect(
     adminPage.getByRole("heading", { name: "You are deleting the issue:" }),
   ).toBeVisible();
 
@@ -77,10 +77,10 @@ test("all issue deletion", async ({ browser }) => {
   await adminPage.keyboard.down("Meta");
   await adminPage.keyboard.press("Backspace");
 
-  expect(
+  await expect(
     adminPage.getByRole("heading", { name: "Are you sure you want to" }),
   ).toBeVisible();
 
   await adminPage.getByRole("button", { name: "Continue" }).click();
-  expect(adminPage.getByTestId("create-issue-input")).toBeFocused();
+  await expect(adminPage.getByTestId("create-issue-input")).toBeFocused();
 });

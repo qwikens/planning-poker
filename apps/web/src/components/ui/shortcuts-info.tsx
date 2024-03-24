@@ -22,6 +22,7 @@ export function ShortcutsInfo({ children }: { children: React.ReactNode }) {
       <PopoverContent
         className="max-w-[95vw]  lg:max-w-[740px] w-full p-6 rounded-xl lg:ml-5"
         sideOffset={10}
+        data-label={"help-dialog"}
       >
         <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr] grid-cols-1">
           <div className={"flex gap-4 flex-col"}>

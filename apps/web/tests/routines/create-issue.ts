@@ -7,6 +7,7 @@ export const createIssue = async ({
   page: Page;
   issueName: string;
 }): Promise<void> => {
+  await page.getByTestId("create-issue-input").clear();
   await page.getByTestId("create-issue-input").fill(issueName);
   await page.getByTestId("create-issue-input").press("Enter");
 };
