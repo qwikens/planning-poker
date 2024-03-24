@@ -65,6 +65,7 @@ export function IssueDropdownMenu({
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
           <Button
+            aria-label={`More actions for issue ${issue.title}`}
             variant={"ghost"}
             className={"w-6 h-6 p-0 bg-transparent"}
             ref={moreRef}
