@@ -6,7 +6,7 @@ import { ensureIssueActive } from "./routines/ensure-issue-active";
 
 const chance = new Chance();
 
-test.only("keyboard shortcuts", async ({ browser }) => {
+test("keyboard shortcuts", async ({ browser }) => {
   const player1Name = chance.name();
   const gameName = chance.word();
 
