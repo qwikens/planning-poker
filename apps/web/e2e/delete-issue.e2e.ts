@@ -5,7 +5,7 @@ import { createRoom } from "./routines/create-room";
 
 const chance = new Chance();
 
-test("issue deletion", async ({ browser }) => {
+test("deletes an issue", async ({ browser }) => {
   const player1Name = chance.name();
   const gameName = chance.word();
   const issueName = chance.sentence({ words: 3 });
@@ -50,7 +50,7 @@ test("issue deletion", async ({ browser }) => {
   await expect(adminPage.getByTestId(`issue-${issueName}`)).toBeHidden();
 });
 
-test("all issue deletion", async ({ browser }) => {
+test("deletes all issues", async ({ browser }) => {
   const player1Name = chance.name();
   const gameName = chance.word();
 
