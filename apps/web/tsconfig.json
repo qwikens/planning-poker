@@ -23,8 +23,11 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    /* Vitest */
+    "types": ["vitest/globals"]
   },
-  "include": ["src", "tests"],
+  "include": ["src", "e2e"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
