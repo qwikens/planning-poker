@@ -1,12 +1,13 @@
 export function update<T>(index: number, value: T, array: T[]): T[] {
+  let updatedIndex = index;
+
   // Ensure the index is within the bounds of the array
-  if (index < 0) {
-    //biome-ignore lint: no-param-reassign
-    index = array.length + index;
+  if (updatedIndex < 0) {
+    updatedIndex = array.length + updatedIndex;
   }
 
   // Check if the index is out of bounds
-  if (index >= array.length || index < 0) {
+  if (updatedIndex >= array.length || updatedIndex < 0) {
     return array;
   }
 
@@ -14,7 +15,7 @@ export function update<T>(index: number, value: T, array: T[]): T[] {
   const result = [...array];
 
   // Update the value at the specified index
-  result[index] = value;
+  result[updatedIndex] = value;
 
   return result;
 }
