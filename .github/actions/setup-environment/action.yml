@@ -18,3 +18,7 @@ runs:
     - name: Install dependencies
       shell: bash
       run: pnpm install --prefer-offline
+
+    - name: Install playwright
+      shell: bash
+      run: pnpx playwright install
