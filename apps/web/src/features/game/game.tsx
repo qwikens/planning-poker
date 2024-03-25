@@ -10,8 +10,14 @@ import { VoteAgain } from "@/features/game/vote-again.tsx";
 import { VoteNext } from "@/features/game/vote-next.tsx";
 import { VotingResult } from "@/features/game/voting-result.tsx";
 import { HocusPocusProvider } from "@/hooks/useHocuspocus.tsx";
+import { useQuery } from "@/hooks/useQuery";
 import { RealtimeProvider, useDocuments } from "@/hooks/useRealtime.tsx";
-import { getGuestName, getSession } from "@/lib/session";
+import {
+  getGuestName,
+  getPrivateKey,
+  getSession,
+  savePrivateKey,
+} from "@/lib/session";
 import { state } from "@/store.ts";
 import { ydoc } from "@/yjsDoc.ts";
 import { useDocumentTitle } from "@mantine/hooks";
@@ -22,25 +28,28 @@ import { useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
 import { HeaderLeft } from "../../components/header-left";
 const Game: FC<{ roomId: string }> = ({ roomId }) => {
-  const snapRoom = useSnapshot(state);
+  const snap = useSnapshot(state);
   const { room } = useDocuments();
   const userId = getSession();
   const userName = getGuestName();
-  const currentIssue = roomId
-    ? snapRoom.room[roomId]?.currentVotingIssue
+  const currentEncryptedVotingIssue = roomId
+    ? snap.room[roomId]?.currentVotingIssue
     : undefined;
-  const title = currentIssue
-    ? `Voting ${currentIssue.title}`
+  const decryptedIssueTitle = snap.decryptedIssues.find(
+    (decryptedIssue) => decryptedIssue.id === currentEncryptedVotingIssue?.id,
+  )?.title;
+  const title = currentEncryptedVotingIssue
+    ? `Voting ${decryptedIssueTitle}`
     : "Planning Poker";
 
   useDocumentTitle(title);
 
-  if (!ydoc.getMap(`ui-state${roomId}`).get(roomId) || !snapRoom.room[roomId]) {
+  if (!ydoc.getMap(`ui-state${roomId}`).get(roomId) || !snap.room[roomId]) {
     // needs sync
     return <div />;
   }
 
-  const isInParticipants = snapRoom.room[roomId]?.participants?.some(
+  const isInParticipants = snap.room[roomId]?.participants?.some(
     (participant) => participant.id === getSession(),
   );
 
@@ -68,7 +77,9 @@ const Game: FC<{ roomId: string }> = ({ roomId }) => {
     });
   }
 
-  const url = `${window.location.origin}/${roomId}`;
+  const url = encodeURI(
+    `${window.location.origin}/${roomId}?privateKey=${getPrivateKey()}`,
+  );
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
@@ -92,9 +103,9 @@ const Game: FC<{ roomId: string }> = ({ roomId }) => {
 
             <motion.div
               className="absolute flex gap-2 right-3 top-6"
-              initial={{ y: snapRoom.room[roomId]?.revealCards ? -100 : 0 }}
+              initial={{ y: snap.room[roomId]?.revealCards ? -100 : 0 }}
               animate={{
-                y: snapRoom.room[roomId]?.revealCards ? -100 : 0,
+                y: snap.room[roomId]?.revealCards ? -100 : 0,
               }}
             >
               <RevealCards roomId={roomId} />
@@ -102,9 +113,9 @@ const Game: FC<{ roomId: string }> = ({ roomId }) => {
 
             <motion.div
               className="absolute flex gap-2 right-3 top-6"
-              initial={{ y: snapRoom.room[roomId]?.revealCards ? 0 : -100 }}
+              initial={{ y: snap.room[roomId]?.revealCards ? 0 : -100 }}
               animate={{
-                y: snapRoom.room[roomId]?.revealCards ? 0 : -100,
+                y: snap.room[roomId]?.revealCards ? 0 : -100,
               }}
             >
               <VoteNext roomId={roomId} />
@@ -112,9 +123,9 @@ const Game: FC<{ roomId: string }> = ({ roomId }) => {
 
             <motion.div
               className="absolute flex gap-2 right-28 top-6"
-              initial={{ y: snapRoom.room[roomId]?.revealCards ? 0 : -100 }}
+              initial={{ y: snap.room[roomId]?.revealCards ? 0 : -100 }}
               animate={{
-                y: snapRoom.room[roomId]?.revealCards ? 0 : -100,
+                y: snap.room[roomId]?.revealCards ? 0 : -100,
               }}
             >
               <VoteAgain roomId={roomId} />
@@ -143,10 +154,22 @@ const Game: FC<{ roomId: string }> = ({ roomId }) => {
 };
 
 export const Component = () => {
-  const roomId = useParams().id;
+  const { id: roomId } = useParams();
+  const query = useQuery();
 
   if (!roomId) {
     return <div>Room id is required</div>;
+  }
+
+  const privateKey = query.get("privateKey");
+
+  // TODO: add empty state
+  if (!privateKey && !getPrivateKey()) {
+    return <div>Unauthorized</div>;
+  }
+
+  if (privateKey) {
+    savePrivateKey(privateKey);
   }
 
   return (

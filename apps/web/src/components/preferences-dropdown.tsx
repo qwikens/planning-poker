@@ -32,7 +32,6 @@ export function PreferencesDropdownMenu({
 
   const closeModal = () => {
     setSettingsOpen(false);
-    console.log(dropDownRef.current);
     dropDownRef.current?.focus();
   };
 

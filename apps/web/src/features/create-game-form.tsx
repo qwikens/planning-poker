@@ -10,12 +10,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input.tsx";
 import { VotingSystemSelect } from "@/components/ui/voting-system-select";
+import { generateKeyPair } from "@/lib/crypto";
 import {
   createRoom,
   createSession,
   getGuestName,
   getSession,
   saveGuestName,
+  savePrivateKey,
 } from "@/lib/session";
 import { state } from "@/store.ts";
 import { ydoc } from "@/yjsDoc.ts";
@@ -61,6 +63,9 @@ const CreateGameForm = () => {
       name: userName,
     };
 
+    const { privateKey, publicKey } = generateKeyPair();
+    savePrivateKey(privateKey);
+
     const game = {
       id: roomId,
       createdAt: Date.now(),
@@ -70,6 +75,7 @@ const CreateGameForm = () => {
       participants: [user],
       revealCards: false,
       votes: [],
+      publicKey,
     };
 
     room.set(roomId, game);

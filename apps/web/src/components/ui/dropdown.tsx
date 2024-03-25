@@ -143,7 +143,6 @@ export function IssueDropdownMenu({
         onOpenAutoFocus={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          console.log(e);
           // focus on delete-issue
           const deleteIssue = document.querySelector(
             "[data-testid=delete-issue]",

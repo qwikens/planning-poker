@@ -24,7 +24,7 @@ const prepareData = (data: VotingHistory[]) => {
   return data.map((row) => {
     return {
       Id: row.id,
-      "Issue title": row.issueName,
+      "Issue title": row.issueTitle,
       "Voted by": row.votes.map((vote) => vote.votedBy.name).join(", "),
       Vote: row.votes.map((vote) => vote.vote).join(", "),
       Agreement: row.agreement,
@@ -33,9 +33,17 @@ const prepareData = (data: VotingHistory[]) => {
 };
 
 const DataTable = ({ id }: { id: string }) => {
-  const { votingHistory } = useSnapshot(state);
+  const { votingHistory, decryptedIssues } = useSnapshot(state);
 
-  const currentVotingHistory = votingHistory[id];
+  const currentVotingHistory = votingHistory[id].map((row) => {
+    const issue = decryptedIssues.find(
+      (decryptedIssue) => decryptedIssue.id === row.issueId,
+    );
+    return {
+      ...row,
+      issueTitle: issue?.title,
+    };
+  });
 
   const exportToCsv = useExportToCsv(
     `${new Date().toLocaleDateString()}_voting_history.csv`,
@@ -65,7 +73,7 @@ const DataTable = ({ id }: { id: string }) => {
           {currentVotingHistory.map((row) => (
             <TableRow key={row.id}>
               <TableCell className="font-medium">{row.id}</TableCell>
-              <TableCell>{row.issueName}</TableCell>
+              <TableCell>{row.issueTitle}</TableCell>
               <TableCell className="text-right">
                 {row.votes.map((vote) => vote.votedBy.name).join(", ")}
               </TableCell>
@@ -98,11 +106,11 @@ const DataTable = ({ id }: { id: string }) => {
 };
 
 const HistoryTable: FC<{ roomId: string }> = ({ roomId }) => {
-  const snapRoom = useSnapshot(state);
+  const snap = useSnapshot(state);
 
   if (
     !ydoc.getMap(`vote-history${roomId}`).get(roomId) ||
-    !snapRoom.votingHistory[roomId]
+    !snap.votingHistory[roomId]
   ) {
     // needs sync
     return <div />;

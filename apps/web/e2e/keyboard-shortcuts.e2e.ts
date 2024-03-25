@@ -4,7 +4,7 @@ import { createRoom } from "./routines/create-room";
 
 const chance = new Chance();
 
-test("keyboard shortcuts", async ({ browser }) => {
+test("presses keyboard shortcuts", async ({ browser }) => {
   const player1Name = chance.name();
   const gameName = chance.word();
 

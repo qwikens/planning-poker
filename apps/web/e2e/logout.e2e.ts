@@ -8,7 +8,7 @@ import { joinRoom } from "./routines/join-room";
 
 const chance = new Chance();
 
-test("logout", async ({ browser }) => {
+test("logs out", async ({ browser }) => {
   const player1Name = chance.name();
   const player2Name = chance.name();
   const gameName = chance.word();

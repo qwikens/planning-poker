@@ -14,7 +14,7 @@ const chance = new Chance();
 
 const fibonacciNumbers = ["1", "2", "3", "5", "8", "13", "21", "34"];
 
-test("session creation", async ({ browser }) => {
+test("creates a game", async ({ browser }) => {
   const player1Name = chance.name();
   const player2Name = chance.name();
   const gameName = chance.word();

@@ -1,17 +1,9 @@
-import * as crypto from "crypto";
-import { GUEST_NAME_KEY, USER_ID_KEY } from "./env";
+import { v4 as uuid } from "uuid";
+import { GUEST_NAME_KEY, PRIVATE_KEY_KEY, USER_ID_KEY } from "./env";
 
 /** Creates session and saves user id to local storage. */
 export const createSession = () => {
-  let id: string;
-
-  // some browsers don't support crypto.randomUUID without HTTPS
-  if (typeof crypto.randomUUID === "function") {
-    id = crypto.randomUUID();
-  } else {
-    id = Math.random().toString(36).substring(2);
-  }
-
+  const id = uuid();
   localStorage.setItem(USER_ID_KEY, id);
   return id;
 };
@@ -27,16 +19,7 @@ export const getSession = () => localStorage.getItem(USER_ID_KEY);
 
 /** Creates a new room id. */
 export const createRoom = () => {
-  let id: string;
-
-  // some browsers don't support crypto.randomUUID without HTTPS
-  if (typeof crypto.randomUUID === "function") {
-    id = crypto.randomUUID();
-  } else {
-    id = Math.random().toString(36).substring(2);
-  }
-
-  return id;
+  return uuid();
 };
 
 /** Returns default guest name. */
@@ -45,4 +28,18 @@ export const getGuestName = () => localStorage.getItem(GUEST_NAME_KEY);
 /** Saves default guest name. */
 export const saveGuestName = (name: string) => {
   localStorage.setItem(GUEST_NAME_KEY, name);
+};
+
+/** Saves private key to local storage. */
+export const savePrivateKey = (privateKey: string) => {
+  localStorage.setItem(PRIVATE_KEY_KEY, privateKey);
+};
+
+/** Returns private key from local storage. */
+export const getPrivateKey = () => {
+  const privateKey = localStorage.getItem(PRIVATE_KEY_KEY);
+  if (!privateKey) {
+    throw new Error("Private key not found");
+  }
+  return privateKey;
 };

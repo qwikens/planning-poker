@@ -2,8 +2,11 @@ import { createContext, useContext, useEffect, useMemo } from "react";
 import { bind } from "valtio-yjs";
 import * as Y from "yjs";
 
+import { decryptMessage } from "@/lib/crypto";
+import { getPrivateKey } from "@/lib/session";
 import { state } from "@/store";
 import { HotkeyItem, useHotkeys } from "@mantine/hooks";
+import { subscribe } from "valtio";
 import { useHocusPocus } from "./useHocuspocus";
 
 type RealtimeProviderProps = {
@@ -26,7 +29,8 @@ type Vote = {
 export type VotingHistory = {
   id?: string;
   votes: Vote[];
-  issueName?: string;
+  issueTitle?: string;
+  issueId?: string;
   agreement: number; // average of votes
   duration?: number; // start - end time in ms
 };
@@ -47,6 +51,7 @@ export type RoomState = {
   counterEndsAt?: number;
   currentCount?: number;
   createdBy: string;
+  publicKey: string;
 };
 
 type RealtimeContextType = {
@@ -82,13 +87,37 @@ export const RealtimeProvider = ({ children }: RealtimeProviderProps) => {
     const unbind = bind(state.issues, issues);
     const unbindUiState = bind(state.room, room);
     const unbindVotingHistory = bind(state.votingHistory, votingHistory);
+    const unsubscribe = subscribe(state.issues, () => {
+      const privateKey = getPrivateKey();
+
+      state.decryptedIssues = (state.issues[roomId] ?? []).map(
+        (encryptedIssue) => {
+          const foundDecryptedIssue = state.decryptedIssues.find(
+            (decryptedIssue) => decryptedIssue.id === encryptedIssue.id,
+          );
+
+          if (!foundDecryptedIssue) {
+            return {
+              ...encryptedIssue,
+              title: decryptMessage(encryptedIssue.title, privateKey),
+            };
+          }
+
+          return {
+            ...encryptedIssue,
+            title: foundDecryptedIssue.title,
+          };
+        },
+      );
+    });
 
     return () => {
       unbind();
       unbindUiState();
       unbindVotingHistory();
+      unsubscribe();
     };
-  }, [issues, room, votingHistory]);
+  }, [issues, room, votingHistory, state.issues[roomId]]);
 
   const handleHotkey = (shortcut: string): HotkeyItem => {
     return [
