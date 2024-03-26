@@ -451,7 +451,7 @@ export const Issues = () => {
       </TooltipProvider>
       <SheetContent
         ref={ref}
-        className="m-auto top-[114px] sm:max-w-full md:max-w-full w-full lg:w-full lg:max-w-[370px] data-[state=open]:slide-in-from-right p-0"
+        className="m-auto sm:max-w-full md:max-w-full w-full lg:w-full lg:max-w-[370px] data-[state=open]:slide-in-from-right p-0"
         onInteractOutside={(event) => event.preventDefault()}
       >
         <SheetHeader className={"p-4 px-4 mx-1"}>

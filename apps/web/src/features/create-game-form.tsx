@@ -23,14 +23,15 @@ import { state } from "@/store.ts";
 import { ydoc } from "@/yjsDoc.ts";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useClipboard } from "@mantine/hooks";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 const createGameSchema = z
   .object({
-    gameName: z.string(),
-    userName: z.string().min(1),
+    gameName: z.string().max(43),
+    userName: z.string().min(1).max(43),
     votingSystem: z.enum(["fibonacci"]),
   })
   .transform((value) => ({
@@ -44,6 +45,8 @@ type CreateGameFormValues = z.infer<typeof createGameSchema>;
 const CreateGameForm = () => {
   const navigate = useNavigate();
   const { copy } = useClipboard();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const form = useForm<CreateGameFormInput, unknown, CreateGameFormValues>({
     resolver: zodResolver(createGameSchema),
     defaultValues: {
@@ -55,6 +58,7 @@ const CreateGameForm = () => {
 
   const onCreateGame = (values: CreateGameFormValues) => {
     const { gameName, userName, votingSystem } = values;
+    setIsSubmitting(true);
     const roomId = createRoom();
     const room = ydoc.getMap(`ui-state${roomId}`);
 
@@ -138,7 +142,7 @@ const CreateGameForm = () => {
                 )}
               />
             </div>
-            <Button type="submit" className="mt-4">
+            <Button type="submit" className="mt-4" disabled={isSubmitting}>
               Create
             </Button>
           </div>

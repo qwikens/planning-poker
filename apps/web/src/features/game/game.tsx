@@ -22,7 +22,6 @@ import { state } from "@/store.ts";
 import { ydoc } from "@/yjsDoc.ts";
 import { useDocumentTitle } from "@mantine/hooks";
 import { motion } from "framer-motion";
-import { QRCodeSVG } from "qrcode.react";
 import { FC } from "react";
 import { useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
@@ -142,12 +141,7 @@ const Game: FC<{ roomId: string }> = ({ roomId }) => {
           </Button>
         </ShortcutsInfo>
 
-        <div className="hidden flex-col items-center gap-4 xl:flex flex-auto max-w-[372px] w-full duration-150 ease-in-out mt-20 min-w-[350px]">
-          <QRCodeSVG
-            value={url}
-            className="hidden md:block mx-auto  w-[200px] h-[200px] qr-code"
-          />
-        </div>
+        <div className="hidden flex-col items-center gap-4 xl:flex flex-auto max-w-[372px] w-full duration-150 ease-in-out mt-20 min-w-[350px]" />
       </div>
     </div>
   );
