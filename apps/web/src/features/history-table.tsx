@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/table";
 import useExportToCsv from "@/hooks/useExportToCSV.ts";
 import { HocusPocusProvider } from "@/hooks/useHocuspocus.tsx";
-import { RealtimeProvider, VotingHistory } from "@/hooks/useRealtime.tsx";
-import { state } from "@/store.ts";
+import { RealtimeProvider } from "@/hooks/useRealtime.tsx";
+import { VotingHistory, decryptedState, state } from "@/store.ts";
 import { ydoc } from "@/yjsDoc.ts";
 import { FC } from "react";
 import { useParams } from "react-router-dom";
@@ -32,10 +32,11 @@ const prepareData = (data: VotingHistory[]) => {
   });
 };
 
-const DataTable = ({ id }: { id: string }) => {
-  const { votingHistory, decryptedIssues } = useSnapshot(state);
+const DataTable = () => {
+  const { votingHistory } = useSnapshot(state);
+  const { decryptedIssues } = useSnapshot(decryptedState);
 
-  const currentVotingHistory = votingHistory[id].map((row) => {
+  const currentVotingHistory = votingHistory.map((row) => {
     const issue = decryptedIssues.find(
       (decryptedIssue) => decryptedIssue.id === row.issueId,
     );
@@ -106,12 +107,7 @@ const DataTable = ({ id }: { id: string }) => {
 };
 
 const HistoryTable: FC<{ roomId: string }> = ({ roomId }) => {
-  const snap = useSnapshot(state);
-
-  if (
-    !ydoc.getMap(`vote-history${roomId}`).get(roomId) ||
-    !snap.votingHistory[roomId]
-  ) {
+  if (!ydoc.getMap(`game-state-${roomId}`)) {
     // needs sync
     return <div />;
   }
@@ -119,14 +115,14 @@ const HistoryTable: FC<{ roomId: string }> = ({ roomId }) => {
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <nav className="flex items-center justify-between gap-4 px-4 py-2 border-b bg-background border-border h-[56px]">
-        <HeaderLeft id={roomId} isAuthenticated />
+        <HeaderLeft roomId={roomId} isAuthenticated />
       </nav>
       <div
         className={
           "max-w-[1200px] w-full mt-10 px-4 flex flex-col gap-4 my-0 mx-auto"
         }
       >
-        <DataTable id={roomId} />
+        <DataTable />
       </div>
     </div>
   );

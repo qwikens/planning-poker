@@ -10,16 +10,19 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input.tsx";
 import { VotingSystemSelect } from "@/components/ui/voting-system-select";
-import { generateKeyPair } from "@/lib/crypto";
+import {
+  asymmetricEncrypt,
+  generateKeyPair,
+  generateSymmetricKey,
+} from "@/lib/crypto";
 import {
   createRoom,
   createSession,
   getGuestName,
   getSession,
-  saveGuestName,
   savePrivateKey,
+  saveSymmetricKey,
 } from "@/lib/session";
-import { state } from "@/store.ts";
 import { ydoc } from "@/yjsDoc.ts";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useClipboard } from "@mantine/hooks";
@@ -53,18 +56,22 @@ const CreateGameForm = () => {
     },
   });
 
-  const onCreateGame = (values: CreateGameFormValues) => {
+  const onCreateGame = async (values: CreateGameFormValues) => {
     const { gameName, userName, votingSystem } = values;
     const roomId = createRoom();
-    const room = ydoc.getMap(`ui-state${roomId}`);
 
     const user = {
       id: getSession() ?? createSession(),
       name: userName,
     };
 
-    const { privateKey, publicKey } = generateKeyPair();
+    const { privateKey, publicKey } = await generateKeyPair();
     savePrivateKey(privateKey);
+
+    const symmetricKey = generateSymmetricKey();
+    saveSymmetricKey(symmetricKey);
+
+    const encryptedSymmetricKey = asymmetricEncrypt(symmetricKey, publicKey);
 
     const game = {
       id: roomId,
@@ -72,15 +79,23 @@ const CreateGameForm = () => {
       createdBy: user.id,
       name: gameName,
       votingSystem,
-      participants: [user],
       revealCards: false,
       votes: [],
-      publicKey,
+      publicKeys: {
+        [user.id]: publicKey,
+      },
+      encryptedSymmetricKeys: {
+        [user.id]: encryptedSymmetricKey,
+      },
     };
 
-    room.set(roomId, game);
-    saveGuestName(userName);
-    state.room[roomId] = game;
+    const gameYdoc = ydoc.getMap(`game-state-${roomId}`);
+    for (const [key, value] of Object.entries(game)) {
+      gameYdoc.set(key, value);
+    }
+
+    const participantsYdoc = ydoc.getArray(`participants-state-${roomId}`);
+    participantsYdoc.push([user]);
 
     const roomUrl = `${window.location.origin}/${roomId}`;
     copy(roomUrl);

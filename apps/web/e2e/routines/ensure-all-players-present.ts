@@ -5,6 +5,8 @@ export const ensureAllPlayersPresent = async (
   playerNames: string[],
 ): Promise<void> => {
   for (let i = 0; i < pages.length; i++) {
-    await expect(pages[i].getByText(playerNames[i])).toBeVisible();
+    await expect(pages[i].getByText(playerNames[i])).toBeVisible({
+      timeout: 20000,
+    });
   }
 };

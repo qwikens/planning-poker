@@ -1,7 +1,6 @@
 import { getHotkeyHandler, useFocusWithin, useHotkeys } from "@mantine/hooks";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRef, useState } from "react";
-import { useParams } from "react-router-dom";
 import { useSnapshot } from "valtio";
 
 import { z } from "zod";
@@ -14,8 +13,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { Issue, RoomState, useDocuments } from "@/hooks/useRealtime";
-import { state } from "@/store";
+import { Issue, decryptedState, issuesState, state } from "@/store";
 
 import { Button } from "@/components/ui/button";
 
@@ -47,9 +45,10 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useToast } from "@/components/ui/use-toast";
+import { useDocuments } from "@/hooks/useRealtime";
 import useVimNavigation from "@/hooks/useVimNavigation";
-import { encryptMessage } from "@/lib/crypto";
-import { getSession } from "@/lib/session";
+import { symmetricEncrypt } from "@/lib/crypto";
+import { getSession, getSymmetricKey } from "@/lib/session";
 import { cn } from "@/lib/utils.ts";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -61,9 +60,7 @@ type CreateIssueFormInput = z.input<typeof createIssueSchema>;
 type CreateIssueFormValues = z.infer<typeof createIssueSchema>;
 
 const CreateIssueForm = () => {
-  const snap = useSnapshot(state);
   const { issues } = useDocuments();
-  const { id: roomId } = useParams();
   const inputRef = useRef<HTMLInputElement>(null);
   useHotkeys([
     [
@@ -82,26 +79,20 @@ const CreateIssueForm = () => {
 
   const onCreateIssue = (values: CreateIssueFormValues) => {
     const userId = getSession();
-    if (!userId) return;
-
+    const symmetricKey = getSymmetricKey();
     const { title } = values;
 
-    if (!title.length || !roomId || !snap.room[roomId]?.publicKey) {
-      return;
-    }
+    if (!userId || !symmetricKey || !title.length) return;
 
-    if (roomId) {
-      issues.set(roomId, [
-        ...(issues.get(roomId) ?? []),
-        {
-          id: Date.now().toString(),
-          storyPoints: 0,
-          createdAt: Date.now(),
-          createdBy: userId,
-          title: encryptMessage(title, snap.room[roomId].publicKey),
-        },
-      ]);
-    }
+    issues.push([
+      {
+        id: Date.now().toString(),
+        storyPoints: 0,
+        createdAt: Date.now(),
+        createdBy: userId,
+        title: symmetricEncrypt(title, symmetricKey),
+      },
+    ]);
 
     form.reset({ title: "" });
   };
@@ -136,7 +127,6 @@ const CreateIssueForm = () => {
 };
 
 function IssueCard(props: {
-  roomState: RoomState;
   issue: Issue;
   "data-vim-position": number;
   onClick: () => void;
@@ -144,13 +134,13 @@ function IssueCard(props: {
   onDeleteAll: () => void;
 }) {
   const { ref, focused } = useFocusWithin();
+  const { currentVotingIssue } = useSnapshot(state);
 
   useHotkeys([
     ["Enter", focused ? props.onClick : () => {}, { preventDefault: false }],
   ]);
 
-  const currentVoting =
-    props.roomState?.currentVotingIssue?.id === props.issue.id;
+  const currentVoting = currentVotingIssue?.id === props.issue.id;
 
   return (
     <motion.div
@@ -192,60 +182,41 @@ function IssueCard(props: {
 
 const IssueList = () => {
   const snap = useSnapshot(state);
-  const { id: roomId } = useParams();
+  const issuesSnap = useSnapshot(issuesState);
+  const { decryptedIssues } = useSnapshot(decryptedState);
   const { room, issues } = useDocuments();
   const { toast } = useToast();
 
-  if (!roomId) {
-    return <div>Room id is required</div>;
-  }
-
-  if (!room.get(roomId)) {
-    return null;
-  }
-
   const setActiveIssue = (issue: Issue | undefined) => {
-    room.set(roomId, {
-      ...state.room[roomId],
-      revealCards: false,
-      votes: [],
-      currentVotingIssue: issue,
-    });
+    room.set("currentVotingIssue", issue);
+    room.set("revealCards", false);
+    room.set("votes", []);
   };
 
-  const roomState = snap.room[roomId];
-
-  const roomIssues = snap.decryptedIssues;
-
-  const documentIssues = issues.get(roomId) ?? [];
-
   const onDelete = (issueId: string) => {
-    const deletingIssue = documentIssues.find((issue) => issue.id === issueId);
-    if (!deletingIssue) return;
-
-    if (issueId === roomState.currentVotingIssue?.id) {
+    if (issueId === snap.currentVotingIssue?.id) {
       toast({
         title: "Can't delete an issue that is currently being voted on",
       });
       return;
     }
 
-    if (deletingIssue.createdBy !== getSession()) {
+    const deletingIssueIndex = issuesSnap.findIndex(
+      (issue) => issue.id === issueId,
+    );
+
+    if (issuesSnap[deletingIssueIndex].createdBy !== getSession()) {
       toast({
         title: "Can't delete an issue you didn't create",
       });
       return;
     }
 
-    const updatedIssues = documentIssues.filter(
-      (issue) => issue.id !== issueId,
-    );
-
-    issues.set(roomId, updatedIssues);
+    issues.delete(deletingIssueIndex, 1);
   };
 
   const onDeleteAll = () => {
-    if (roomState.createdBy !== getSession()) {
+    if (snap.createdBy !== getSession()) {
       toast({
         title:
           "Can't delete all issues, only the creator of the room can do that",
@@ -253,14 +224,10 @@ const IssueList = () => {
       return;
     }
 
-    room.set(roomId, {
-      ...state.room[roomId],
-      revealCards: false,
-      votes: [],
-      currentVotingIssue: undefined,
-    });
-
-    issues.set(roomId, []);
+    room.set("currentVotingIssue", undefined);
+    room.set("revealCards", false);
+    room.set("votes", []);
+    issues.delete(0, issuesSnap.length);
 
     const input = document.querySelector(
       "[data-testid=create-issue-input]",
@@ -274,14 +241,10 @@ const IssueList = () => {
 
   useHotkeys([["mod+Shift+Backspace", () => setDeleteOpen(true)]]);
 
-  if (!roomState) {
-    return null;
-  }
-
   return (
     <ScrollArea className="h-[85dvh] rounded-md pb-10 px-4">
       <AnimatePresence initial={false}>
-        {roomIssues
+        {decryptedIssues
           .slice()
           .reverse()
           .map((issue, index) => (
@@ -292,10 +255,9 @@ const IssueList = () => {
                 onDelete(issue.id);
               }}
               onDeleteAll={onDeleteAll}
-              roomState={roomState as RoomState}
               issue={issue}
               onClick={() => {
-                if (roomState.votes.length > 0 && !roomState.revealCards) {
+                if (snap.votes.length > 0 && !snap.revealCards) {
                   toast({
                     title: "Can't change issue, reveal the cards first",
                   });
@@ -303,7 +265,7 @@ const IssueList = () => {
                 }
 
                 setActiveIssue(
-                  snap.issues[roomId].find(
+                  issuesSnap.find(
                     (encryptedIssue) => encryptedIssue.id === issue.id,
                   ),
                 );

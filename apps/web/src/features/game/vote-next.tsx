@@ -1,41 +1,35 @@
 import { ButtonRotateBorder } from "@/components/ui/button-rotate-border";
 import { toast } from "@/components/ui/use-toast.ts";
 import { useDocuments } from "@/hooks/useRealtime.tsx";
-import { state } from "@/store.ts";
+import { decryptedState, state } from "@/store.ts";
 import { useHotkeys } from "@mantine/hooks";
 import { useSnapshot } from "valtio";
 
-export const VoteNext = ({ roomId }: { roomId: string }) => {
+export const VoteNext = () => {
   const snap = useSnapshot(state);
+  const { decryptedIssues } = useSnapshot(decryptedState);
   const { room } = useDocuments();
 
   const onVoteNext = () => {
-    const currentIssueId = snap.room[roomId]?.currentVotingIssue?.id;
-    const currentIssues = snap.decryptedIssues;
+    const currentIssueId = snap.currentVotingIssue?.id;
 
-    if (
-      snap.room[roomId]?.votes.length > 0 &&
-      !snap.room[roomId]?.revealCards
-    ) {
+    if (snap.votes.length > 0 && !snap.revealCards) {
       toast({
         title: "Can't move to the next issue, reveal the cards first",
       });
       return;
     }
 
-    if (!currentIssueId || !currentIssues) {
+    if (!currentIssueId || !decryptedIssues) {
       return;
     }
 
-    const nextIssue = currentIssues.find((issue) => issue.storyPoints === 0);
+    const nextIssue = decryptedIssues.find((issue) => issue.storyPoints === 0);
 
     if (nextIssue) {
-      room.set(roomId, {
-        ...state.room[roomId],
-        currentVotingIssue: nextIssue,
-        revealCards: false,
-        votes: [],
-      });
+      room.set("votes", []);
+      room.set("revealCards", false);
+      room.set("currentVotingIssue", nextIssue);
       return;
     }
 

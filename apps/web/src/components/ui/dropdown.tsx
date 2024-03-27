@@ -21,8 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Kbd } from "@/components/ui/kbd.tsx";
-import { Issue } from "@/hooks/useRealtime.tsx";
-import { state } from "@/store.ts";
+import { Issue, state } from "@/store.ts";
 import { getHotkeyHandler } from "@mantine/hooks";
 import { useHotkeys } from "@mantine/hooks";
 import { useRef, useState } from "react";

@@ -8,16 +8,22 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input.tsx";
 import { useDocuments } from "@/hooks/useRealtime.tsx";
+import { generateKeyPair } from "@/lib/crypto";
 import {
   createSession,
   getGuestName,
+  getPrivateKey,
+  getPublicKey,
   getSession,
   saveGuestName,
+  savePrivateKey,
+  savePublicKey,
 } from "@/lib/session";
 import { state } from "@/store.ts";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { useSnapshot } from "valtio";
 import { z } from "zod";
 
 const createUserSchema = z.object({
@@ -27,8 +33,9 @@ type CreateUserFormInput = z.input<typeof createUserSchema>;
 type CreateUserFormValues = z.infer<typeof createUserSchema>;
 
 export const CreateUserForm = ({ roomId }: { roomId: string }) => {
+  const snap = useSnapshot(state);
   const navigate = useNavigate();
-  const { room } = useDocuments();
+  const { room, participants } = useDocuments();
   const form = useForm<CreateUserFormInput, unknown, CreateUserFormValues>({
     resolver: zodResolver(createUserSchema),
     defaultValues: {
@@ -36,7 +43,7 @@ export const CreateUserForm = ({ roomId }: { roomId: string }) => {
     },
   });
 
-  const onCreateUser = (values: CreateUserFormValues) => {
+  const onCreateUser = async (values: CreateUserFormValues) => {
     const { userName } = values;
 
     const user = {
@@ -44,10 +51,15 @@ export const CreateUserForm = ({ roomId }: { roomId: string }) => {
       name: userName,
     };
     saveGuestName(userName);
-    room.set(roomId, {
-      ...state.room[roomId],
-      participants: [...(state.room[roomId]?.participants ?? []), user],
+
+    const { privateKey, publicKey } = await generateKeyPair();
+    savePrivateKey(privateKey);
+
+    room.set("publicKeys", {
+      ...snap.publicKeys,
+      [user.id]: publicKey,
     });
+    participants.push([user]);
 
     navigate(`/${roomId}`);
   };
