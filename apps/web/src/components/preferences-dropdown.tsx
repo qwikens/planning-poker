@@ -18,10 +18,10 @@ import { Drawer, DrawerTrigger } from "./ui/drawer";
 
 export function PreferencesDropdownMenu({
   children,
-  id,
+  roomId,
 }: {
   children: React.ReactNode;
-  id?: string;
+  roomId?: string;
 }) {
   const [open, setOpen] = React.useState(false);
   const navigation = useNavigate();
@@ -61,10 +61,10 @@ export function PreferencesDropdownMenu({
               </Trigger>
             </DropdownMenuItem>
 
-            {id ? (
+            {roomId ? (
               <DropdownMenuItem
                 onClick={() => {
-                  navigation(`/${id}/history`);
+                  navigation(`/${roomId}/history`);
                 }}
               >
                 <span>Voting history</span>

@@ -1,58 +1,56 @@
 import { ButtonRotateBorder } from "@/components/ui/button-rotate-border";
 import { useDocuments } from "@/hooks/useRealtime.tsx";
-import { update } from "@/lib/update.ts";
-import { state } from "@/store.ts";
+import { issuesState, state } from "@/store.ts";
 import { useHotkeys } from "@mantine/hooks";
 import mean from "lodash.mean";
 import { useSnapshot } from "valtio";
 
-export const RevealCards = ({ roomId }: { roomId: string }) => {
+export const RevealCards = () => {
   const snap = useSnapshot(state);
-  const { room, issues, votingHistory } = useDocuments();
+  const issuesSnap = useSnapshot(issuesState);
+  const { room, issues } = useDocuments();
 
   const onRevealCards = () => {
-    if (snap.room[roomId]?.votes?.map((vote) => vote.vote).length === 0) return;
+    if (snap.votes?.map((vote) => vote.vote).length === 0) return;
 
-    const currentIssues = snap.issues[roomId];
+    const currentIssues = issuesSnap;
 
     const index =
       currentIssues?.findIndex((issue) => {
-        return issue.id === snap.room[roomId]?.currentVotingIssue?.id;
+        return issue.id === snap.currentVotingIssue?.id;
       }) ?? -1;
 
     if (index !== -1) {
-      const numericVotes = snap.room[roomId].votes
+      const numericVotes = snap.votes
         .filter((vote) => typeof vote.vote === "number")
         .map((vote) => Number(vote.vote));
       const averageStoryPoints = Math.round(mean(numericVotes));
 
-      const updated = {
+      const updatedIssue = {
         ...currentIssues[index],
         storyPoints: averageStoryPoints,
       };
 
-      const updatedIssues = update(index, updated, [...currentIssues]);
-
-      if (index >= 0 && index < (issues.get(roomId)?.length ?? 0)) {
-        issues.set(roomId, updatedIssues);
+      if (index >= 0 && index < issues.length) {
+        // TODO: update this when YJS has an update method
+        // FIXME: run this in a transaction. Valtio is not reactive to this transaction, need to fix it
+        issues.delete(index, 1);
+        issues.insert(index, [updatedIssue]);
       }
 
-      votingHistory.set(roomId, [
-        ...(state?.votingHistory[roomId] ?? []),
+      room.set("votingHistory", [
+        ...snap.votingHistory,
         {
-          id: snap.room[roomId].currentVotingIssue?.id,
-          votes: [...snap.room[roomId].votes],
-          issueTitle: snap.room[roomId].currentVotingIssue?.title,
-          issueId: snap.room[roomId].currentVotingIssue?.id,
+          id: snap.currentVotingIssue?.id,
+          votes: [...snap.votes],
+          issueTitle: snap.currentVotingIssue?.title,
+          issueId: snap.currentVotingIssue?.id,
           agreement: averageStoryPoints,
         },
       ]);
     }
 
-    room.set(roomId, {
-      ...state.room[roomId],
-      revealCards: true,
-    });
+    room.set("revealCards", true);
   };
 
   useHotkeys([["r", onRevealCards]]);

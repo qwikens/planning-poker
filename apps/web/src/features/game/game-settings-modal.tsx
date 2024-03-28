@@ -99,8 +99,8 @@ function ProfileForm({
   const form = useForm<UpdateGameFormInput, unknown, UpdateGameFormValues>({
     resolver: zodResolver(updateGameSchema),
     defaultValues: {
-      gameName: snap.room[roomId ?? ""]?.name,
-      votingSystem: snap.room[roomId ?? ""]?.votingSystem,
+      gameName: snap.name,
+      votingSystem: snap.votingSystem,
     },
   });
 
@@ -111,11 +111,8 @@ function ProfileForm({
   const onUpdateGame = (values: UpdateGameFormValues) => {
     const { gameName, votingSystem } = values;
 
-    room.set(roomId, {
-      ...state.room[roomId],
-      name: gameName,
-      votingSystem,
-    });
+    room.set("name", gameName);
+    room.set("votingSystem", votingSystem);
 
     closeModal();
   };

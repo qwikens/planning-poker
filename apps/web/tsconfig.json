@@ -28,6 +28,6 @@
     /* Vitest */
     "types": ["vitest/globals"]
   },
-  "include": ["src", "e2e"],
+  "exclude": ["node_modules", "build",],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

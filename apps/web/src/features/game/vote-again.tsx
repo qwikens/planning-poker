@@ -4,19 +4,16 @@ import { state } from "@/store.ts";
 import { useHotkeys } from "@mantine/hooks";
 import { useSnapshot } from "valtio";
 
-export const VoteAgain = ({ roomId }: { roomId: string }) => {
+export const VoteAgain = () => {
   const snap = useSnapshot(state);
   const { room } = useDocuments();
 
   const onVoteAgain = () => {
-    const isRevealed = snap.room[roomId]?.revealCards;
+    const isRevealed = snap.revealCards;
 
     if (isRevealed) {
-      room.set(roomId, {
-        ...state.room[roomId],
-        revealCards: false,
-        votes: [],
-      });
+      room.set("revealCards", false);
+      room.set("votes", []);
     }
   };
 

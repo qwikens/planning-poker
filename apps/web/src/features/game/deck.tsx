@@ -13,13 +13,14 @@ import { useSnapshot } from "valtio";
 import { getSession } from "@/lib/session";
 import { useDocuments } from "../../hooks/useRealtime";
 import { cn } from "../../lib/utils";
-import { state } from "../../store";
+import { participantsState, state } from "../../store";
 
-export function Deck({ roomId }: { roomId: string }) {
+export function Deck() {
   const mouseX = useMotionValue(Infinity);
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const snap = useSnapshot(state);
+  const participantsSnap = useSnapshot(participantsState);
 
   useHotkeys([
     ["1", () => onVote(1)],
@@ -41,46 +42,42 @@ export function Deck({ roomId }: { roomId: string }) {
     fibonacci: [1, 2, 3, 5, 8, 13, 21, 34],
   };
 
-  const options =
-    optionsList[snap.room[roomId]?.votingSystem] ?? optionsList.fibonacci;
+  const options = optionsList[snap.votingSystem] ?? optionsList.fibonacci;
 
   const { room } = useDocuments();
 
   const onVote = (option: number | string) => {
     const userId = getSession();
-    const user = snap.room[roomId]?.participants?.find(
+    const user = participantsSnap.find(
       (participant) => participant.id === userId,
     );
 
     if (!user) return;
 
-    const existingVotesWithoutMine =
-      room.get(roomId)?.votes?.filter((vote) => vote.votedBy.id !== user.id) ??
-      [];
+    const existingVotesWithoutMine = snap.votes.filter(
+      (vote) => vote.votedBy.id !== user.id,
+    );
 
-    room.set(roomId, {
-      ...state.room[roomId],
-      revealCards: false,
-      votes: [
-        ...existingVotesWithoutMine,
-        {
-          votedBy: user,
-          vote: option,
-        },
-      ],
-    });
+    room.set("revealCards", false);
+    room.set("votes", [
+      ...existingVotesWithoutMine,
+      {
+        votedBy: user,
+        vote: option,
+      },
+    ]);
   };
 
-  const activeTab = snap.room[roomId]?.votes?.find(
+  const activeTab = snap.votes?.find(
     (vote) => vote.votedBy.id === getSession(),
   );
 
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ y: snap.room[roomId]?.revealCards ? 110 : 0 }}
+        initial={{ y: snap.revealCards ? 110 : 0 }}
         animate={{
-          y: snap.room[roomId]?.revealCards ? 110 : 0,
+          y: snap.revealCards ? 110 : 0,
         }}
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
@@ -91,10 +88,10 @@ export function Deck({ roomId }: { roomId: string }) {
             <AppIcon
               mouseX={mouseX}
               key={option}
-              isVisible={snap.room[roomId]?.revealCards}
+              isVisible={snap.revealCards}
               onClick={() => onVote(option)}
               className={cn("relative min-w-[40px] h-[40px]", {
-                "cursor-pointer": !snap.room[roomId]?.revealCards,
+                "cursor-pointer": !snap.revealCards,
                 "border-primary/90": activeTab?.vote === option,
               })}
             >

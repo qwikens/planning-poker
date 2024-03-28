@@ -1,5 +1,10 @@
 import { v4 as uuid } from "uuid";
-import { GUEST_NAME_KEY, PRIVATE_KEY_KEY, USER_ID_KEY } from "./env";
+import {
+  GUEST_NAME_KEY,
+  PRIVATE_KEY_KEY,
+  SYMMETRIC_KEY_KEY,
+  USER_ID_KEY,
+} from "./env";
 
 /** Creates session and saves user id to local storage. */
 export const createSession = () => {
@@ -36,10 +41,12 @@ export const savePrivateKey = (privateKey: string) => {
 };
 
 /** Returns private key from local storage. */
-export const getPrivateKey = () => {
-  const privateKey = localStorage.getItem(PRIVATE_KEY_KEY);
-  if (!privateKey) {
-    throw new Error("Private key not found");
-  }
-  return privateKey;
+export const getPrivateKey = () => localStorage.getItem(PRIVATE_KEY_KEY);
+
+/** Saves symmetric key to local storage. */
+export const saveSymmetricKey = (symmetricKey: string) => {
+  localStorage.setItem(SYMMETRIC_KEY_KEY, symmetricKey);
 };
+
+/** Returns symmetric key from local storage. */
+export const getSymmetricKey = () => localStorage.getItem(SYMMETRIC_KEY_KEY);

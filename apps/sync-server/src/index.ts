@@ -4,39 +4,6 @@ import { Hocuspocus } from "@hocuspocus/server";
 
 import { env } from "./env";
 
-// TODO: share types between server and client
-type Issue = {
-  id: string;
-  storyPoints?: number;
-  createdAt: number;
-  createdBy: string;
-  link?: string;
-  title: string;
-};
-
-type User = {
-  id: string;
-  name: string;
-};
-
-type Vote = {
-  votedBy: User;
-  vote: number | string;
-};
-
-type RoomState = {
-  votes: Vote[];
-  currentVotingIssue?: Issue;
-  participants: User[];
-  revealCards: boolean;
-  votingSystem: string;
-  name: string;
-  counterStartedAt?: number;
-  counterEndsAt?: number;
-  currentCount?: number;
-  publicKey: string;
-};
-
 export const server = new Hocuspocus({
   port: env.PORT,
   extensions: [
@@ -49,20 +16,19 @@ export const server = new Hocuspocus({
     const { document } = data;
     const { userId } = data.context;
 
-    const roomMap = document.getMap<RoomState>(`ui-state${document.name}`);
-    const room = roomMap.get(document.name);
+    const participants = document.getArray<{ id: string }>(
+      `participants-state-${document.name}`,
+    );
 
-    if (!room) {
-      // TODO: add observability
+    const participantIndex = participants
+      .toArray()
+      .findIndex((participant) => participant.id === userId);
+
+    if (participantIndex === -1) {
       return;
     }
 
-    roomMap.set(document.name, {
-      ...room,
-      participants: room.participants.filter(
-        (participant) => participant.id !== userId,
-      ),
-    });
+    participants.delete(participantIndex, 1);
   },
   async onAuthenticate(data) {
     const { token } = data;

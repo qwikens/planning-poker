@@ -1,27 +1,28 @@
 import CardFlip from "@/components/ui/cardflip.tsx";
-import { state } from "@/store.ts";
+import { decryptedState, participantsState, state } from "@/store.ts";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import mean from "lodash.mean";
 import { useSnapshot } from "valtio";
 
-export const VotingResult = ({ id }: { id: string }) => {
+export const VotingResult = () => {
   const snap = useSnapshot(state);
+  const participants = useSnapshot(participantsState);
+  const { decryptedIssues } = useSnapshot(decryptedState);
 
-  const roomState = snap.room[id];
-
-  const numericVotes = roomState.votes
+  const numericVotes = snap.votes
     .filter((vote) => typeof vote.vote === "number")
     .map((vote) => Number(vote.vote));
   const averageStoryPoints = Math.round(mean(numericVotes));
 
-  const groupedVotes: Record<number | string, number> =
-    roomState?.votes?.reduce<Record<number | string, number>>((acc, vote) => {
-      acc[vote.vote] = (acc[vote.vote] || 0) + 1;
-      return acc;
-    }, {});
+  const groupedVotes: Record<number | string, number> = snap.votes.reduce<
+    Record<number | string, number>
+  >((acc, vote) => {
+    acc[vote.vote] = (acc[vote.vote] || 0) + 1;
+    return acc;
+  }, {});
 
-  const decryptedIssueTitle = snap.decryptedIssues.find(
-    (decryptedIssue) => decryptedIssue.id === roomState.currentVotingIssue?.id,
+  const decryptedIssueTitle = decryptedIssues.find(
+    (decryptedIssue) => decryptedIssue.id === snap.currentVotingIssue?.id,
   )?.title;
 
   return (
@@ -37,12 +38,12 @@ export const VotingResult = ({ id }: { id: string }) => {
                 "flex gap-4 justify-center items-center flex-wrap w-full"
               }
             >
-              {roomState.participants.map((participant) => {
-                const participantVote = roomState.votes.find(
+              {participants.map((participant) => {
+                const participantVote = snap.votes.find(
                   (vote) => vote.votedBy.id === participant.id,
                 );
 
-                const canShowVote = roomState.revealCards;
+                const canShowVote = snap.revealCards;
 
                 return (
                   <motion.div
@@ -73,7 +74,7 @@ export const VotingResult = ({ id }: { id: string }) => {
         </AnimatePresence>
       </div>
 
-      {roomState?.revealCards && (
+      {snap.revealCards && (
         <div className="absolute flex gap-6 transform -translate-x-1/2 bottom-6 left-1/2">
           {Object.entries(groupedVotes).map(([vote, count]) => {
             const percentage = (count / Object.keys(groupedVotes).length) * 100;

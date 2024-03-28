@@ -2,9 +2,25 @@ import { createContext, useContext, useEffect, useMemo } from "react";
 import { bind } from "valtio-yjs";
 import * as Y from "yjs";
 
-import { decryptMessage } from "@/lib/crypto";
-import { getPrivateKey } from "@/lib/session";
-import { state } from "@/store";
+import {
+  asymmetricDecrypt,
+  asymmetricEncrypt,
+  symmetricDecrypt,
+} from "@/lib/crypto";
+import {
+  getPrivateKey,
+  getSession,
+  getSymmetricKey,
+  saveSymmetricKey,
+} from "@/lib/session";
+import {
+  Issue,
+  User,
+  decryptedState,
+  issuesState,
+  participantsState,
+  state,
+} from "@/store";
 import { HotkeyItem, useHotkeys } from "@mantine/hooks";
 import { subscribe } from "valtio";
 import { useHocusPocus } from "./useHocuspocus";
@@ -13,51 +29,10 @@ type RealtimeProviderProps = {
   children: React.ReactNode;
 };
 
-export type Issue = {
-  id: string;
-  storyPoints?: number;
-  createdAt: number;
-  createdBy: string;
-  title: string;
-};
-
-type Vote = {
-  votedBy: User;
-  vote: number | string;
-};
-
-export type VotingHistory = {
-  id?: string;
-  votes: Vote[];
-  issueTitle?: string;
-  issueId?: string;
-  agreement: number; // average of votes
-  duration?: number; // start - end time in ms
-};
-
-type User = {
-  id: string;
-  name: string;
-};
-
-export type RoomState = {
-  votes: Vote[];
-  currentVotingIssue?: Issue;
-  participants: User[];
-  revealCards: boolean;
-  votingSystem: string;
-  name: string;
-  counterStartedAt?: number;
-  counterEndsAt?: number;
-  currentCount?: number;
-  createdBy: string;
-  publicKey: string;
-};
-
 type RealtimeContextType = {
-  issues: Y.Map<Issue[]>;
-  room: Y.Map<RoomState>;
-  votingHistory: Y.Map<VotingHistory[]>;
+  room: Y.Map<unknown>;
+  issues: Y.Array<Issue>;
+  participants: Y.Array<User>;
   undoManagerIssues: Y.UndoManager;
 };
 
@@ -75,49 +50,108 @@ export const useDocuments = () => {
 
 export const RealtimeProvider = ({ children }: RealtimeProviderProps) => {
   const { provider, roomId } = useHocusPocus();
-  const room = provider.document.getMap<RoomState>(`ui-state${roomId}`);
-  const issues = provider.document.getMap<Issue[]>(`issues-${roomId}`);
-  const votingHistory = provider.document.getMap<VotingHistory[]>(
-    `vote-history${roomId}`,
+  const room = provider.document.getMap(`game-state-${roomId}`);
+  const issues = provider.document.getArray<Issue>(`issues-state-${roomId}`);
+  const participants = provider.document.getArray(
+    `participants-state-${roomId}`,
   );
 
   const undoManagerIssues = useMemo(() => new Y.UndoManager(issues), [issues]);
 
-  useEffect(() => {
-    const unbind = bind(state.issues, issues);
-    const unbindUiState = bind(state.room, room);
-    const unbindVotingHistory = bind(state.votingHistory, votingHistory);
-    const unsubscribe = subscribe(state.issues, () => {
-      const privateKey = getPrivateKey();
-
-      state.decryptedIssues = (state.issues[roomId] ?? []).map(
-        (encryptedIssue) => {
-          const foundDecryptedIssue = state.decryptedIssues.find(
-            (decryptedIssue) => decryptedIssue.id === encryptedIssue.id,
-          );
-
-          if (!foundDecryptedIssue) {
-            return {
-              ...encryptedIssue,
-              title: decryptMessage(encryptedIssue.title, privateKey),
-            };
-          }
-
-          return {
-            ...encryptedIssue,
-            title: foundDecryptedIssue.title,
-          };
-        },
+  const decryptIssues = (symmetricKey: string) => {
+    decryptedState.decryptedIssues = issuesState.map((encryptedIssue) => {
+      const foundDecryptedIssue = decryptedState.decryptedIssues.find(
+        (decryptedIssue) => decryptedIssue.id === encryptedIssue.id,
       );
+
+      if (!foundDecryptedIssue) {
+        return {
+          ...encryptedIssue,
+          title: symmetricDecrypt(encryptedIssue.title, symmetricKey),
+        };
+      }
+
+      return {
+        ...encryptedIssue,
+        title: foundDecryptedIssue.title,
+      };
+    });
+  };
+
+  useEffect(() => {
+    const unbindGame = bind(state, room);
+    const unbindIssues = bind(issuesState, issues);
+    const unbindParticipants = bind(participantsState, participants);
+    const unsubscribeIssues = subscribe(issuesState, () => {
+      const symmetricKey = getSymmetricKey();
+      if (!symmetricKey) {
+        return;
+      }
+
+      decryptIssues(symmetricKey);
+    });
+    const unsubscribeParticipants = subscribe(participantsState, () => {
+      const userId = getSession();
+      const symmetricKey = getSymmetricKey();
+      if (!userId || !symmetricKey) return;
+
+      for (const participant of participantsState) {
+        if (
+          state.encryptedSymmetricKeys[participant.id] ||
+          participant.id === userId
+        ) {
+          continue;
+        }
+
+        const participantPublicKey = state.publicKeys[participant.id];
+
+        if (!participantPublicKey) {
+          continue;
+        }
+
+        room.set("encryptedSymmetricKeys", {
+          ...state.encryptedSymmetricKeys,
+          [participant.id]: asymmetricEncrypt(
+            symmetricKey,
+            participantPublicKey,
+          ),
+        });
+      }
+    });
+    const unsubscribeEncryptedSymmetricKeys = subscribe(state, () => {
+      const userId = getSession();
+      const privateKey = getPrivateKey();
+      if (!userId || !privateKey) return;
+
+      if (
+        !state.hasDecryptedSymmetricKey[userId] &&
+        state.encryptedSymmetricKeys[userId]
+      ) {
+        for (const [participantId, encryptedSymmetricKey] of Object.entries(
+          state.encryptedSymmetricKeys,
+        )) {
+          if (participantId === userId) {
+            saveSymmetricKey(
+              asymmetricDecrypt(encryptedSymmetricKey, privateKey),
+            );
+            room.set("hasDecryptedSymmetricKey", {
+              ...state.hasDecryptedSymmetricKey,
+              [userId]: true,
+            });
+          }
+        }
+      }
     });
 
     return () => {
-      unbind();
-      unbindUiState();
-      unbindVotingHistory();
-      unsubscribe();
+      unbindGame();
+      unbindIssues();
+      unbindParticipants();
+      unsubscribeIssues();
+      unsubscribeParticipants();
+      unsubscribeEncryptedSymmetricKeys();
     };
-  }, [issues, room, votingHistory, state.issues[roomId]]);
+  }, [room, issues, participants, decryptIssues]);
 
   const handleHotkey = (shortcut: string): HotkeyItem => {
     return [
@@ -151,10 +185,10 @@ export const RealtimeProvider = ({ children }: RealtimeProviderProps) => {
   return (
     <RealtimeContext.Provider
       value={{
-        issues,
         room,
+        participants,
+        issues,
         undoManagerIssues,
-        votingHistory,
       }}
     >
       {children}

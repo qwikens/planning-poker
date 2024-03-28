@@ -6,11 +6,10 @@ import { useSnapshot } from "valtio";
 import { PreferencesDropdownMenu } from "./preferences-dropdown";
 
 export const HeaderLeft = ({
-  id,
+  roomId,
   isAuthenticated,
-}: { id?: string; isAuthenticated?: boolean } = {}) => {
-  const { room } = useSnapshot(state);
-  const currentRoom = room[id ?? ""];
+}: { roomId?: string; isAuthenticated?: boolean } = {}) => {
+  const { name } = useSnapshot(state);
 
   return (
     <div className="flex items-center gap-4 w-fit">
@@ -19,12 +18,12 @@ export const HeaderLeft = ({
         <NetworkStatus />
       </div>
 
-      {currentRoom?.name && isAuthenticated ? (
-        <PreferencesDropdownMenu id={id}>
-          <TextAnimatedGradient>{currentRoom.name}</TextAnimatedGradient>
+      {name && isAuthenticated ? (
+        <PreferencesDropdownMenu roomId={roomId}>
+          <TextAnimatedGradient>{name}</TextAnimatedGradient>
         </PreferencesDropdownMenu>
-      ) : currentRoom?.name ? (
-        <TextAnimatedGradient>{currentRoom.name}</TextAnimatedGradient>
+      ) : name ? (
+        <TextAnimatedGradient>{name}</TextAnimatedGradient>
       ) : null}
     </div>
   );
